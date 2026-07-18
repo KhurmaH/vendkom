@@ -332,7 +332,7 @@ if (window.gsap && window.ScrollTrigger) {
         end: 'top 25%',
         scrub: 0.5,
         onUpdate: self => {
-          amountEl.textContent = `$${Math.round(gsap.utils.interpolate(monthly, annual, self.progress))}`;
+          amountEl.textContent = `${Math.round(gsap.utils.interpolate(monthly, annual, self.progress))} JD`;
           if (noteEl) noteEl.textContent = self.progress > 0.5 ? 'billed annually · save ~20%' : 'billed monthly';
         },
       });
@@ -386,7 +386,7 @@ if (window.gsap && window.ScrollTrigger) {
     });
     document.querySelectorAll('.checklist-item').forEach(item => item.classList.add('is-done'));
     document.querySelectorAll('.price-card .amount').forEach(el => {
-      el.textContent = `$${el.dataset.annual}`;
+      el.textContent = `${el.dataset.annual} JD`;
     });
     document.querySelectorAll('.price-card [data-billing-note]').forEach(el => {
       el.textContent = 'billed annually · save ~20%';
