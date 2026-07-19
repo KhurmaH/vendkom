@@ -478,7 +478,9 @@
       <div class="gs-panels">
         <div class="gs-block">
           <p class="gs-block-label">I'm planning an event</p>
-          <form id="organizerForm" novalidate>
+          <form id="organizerForm" name="organizer-signup" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" novalidate>
+            <input type="hidden" name="form-name" value="organizer-signup">
+            <p style="display:none;"><label>Leave this field empty: <input name="bot-field"></label></p>
             <div class="form-row">
               <div class="form-field"><label for="orgName">Full name</label><input type="text" id="orgName" name="name" required></div>
               <div class="form-field"><label for="orgEmail">Email</label><input type="email" id="orgEmail" name="email" required></div>
@@ -507,7 +509,9 @@
 
         <div class="gs-block">
           <p class="gs-block-label">I'm a vendor</p>
-          <form id="vendorForm" novalidate>
+          <form id="vendorForm" name="vendor-signup" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" novalidate>
+            <input type="hidden" name="form-name" value="vendor-signup">
+            <p style="display:none;"><label>Leave this field empty: <input name="bot-field"></label></p>
             <div class="form-row">
               <div class="form-field"><label for="venBusiness">Business name</label><input type="text" id="venBusiness" name="business" required></div>
               <div class="form-field"><label for="venEmail">Email</label><input type="email" id="venEmail" name="email" required></div>

@@ -398,7 +398,8 @@ if (window.gsap && window.ScrollTrigger) {
   }
 }
 
-/* ---------- Forms (static site: show a confirmation, no backend wired yet) ---------- */
+/* ---------- Forms: submit to Netlify Forms via AJAX, falling back to a native
+   POST (page reload) if the fetch itself fails, so a submission is never silently lost. ---------- */
 ['organizerForm', 'vendorForm'].forEach(id => {
   const form = document.getElementById(id);
   if (!form) return;
@@ -408,6 +409,13 @@ if (window.gsap && window.ScrollTrigger) {
       form.reportValidity();
       return;
     }
-    form.classList.add('submitted');
+    const body = new URLSearchParams(new FormData(form)).toString();
+    fetch('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body,
+    })
+      .then(() => form.classList.add('submitted'))
+      .catch(() => form.submit());
   });
 });
