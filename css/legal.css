@@ -1,0 +1,126 @@
+/* ==========================================================================
+   Vendkom — legal document pages
+   Plain, readable, printable. No animation, no scroll tricks — this is the
+   one place on the site where getting out of the reader's way matters more
+   than the brand's kinetic personality.
+   ========================================================================== */
+:root {
+  --ink: #0a0a0d;
+  --paper: #f3efe4;
+  --paper-line: rgba(10, 10, 13, 0.14);
+  --paper-muted: #6b6656;
+  --lime: #d6ff3f;
+  --coral: #ff4d23;
+  --font-display: 'Archivo', 'Inter', -apple-system, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  line-height: 1.7;
+  font-size: 1.02rem;
+}
+.legal-header {
+  border-bottom: 1px solid var(--paper-line);
+  padding: 22px 0;
+}
+.legal-header .inner {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.legal-header .mark {
+  width: 28px; height: 28px;
+  border-radius: 7px;
+  background: var(--lime);
+  color: var(--ink);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 800; font-size: 0.95rem;
+}
+.legal-header a {
+  color: var(--ink);
+  text-decoration: none;
+  font-family: var(--font-display);
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: 1rem;
+  letter-spacing: 0.01em;
+}
+main.legal {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 56px 24px 100px;
+}
+.legal .eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--coral);
+  margin-bottom: 14px;
+  display: block;
+}
+main.legal h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4.5vw, 2.8rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  margin: 0 0 8px;
+  line-height: 1.05;
+}
+.legal .updated {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--paper-muted);
+  margin-bottom: 40px;
+}
+main.legal h2 {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 800;
+  margin: 2.4em 0 0.6em;
+  padding-top: 0.4em;
+  border-top: 1px solid var(--paper-line);
+}
+main.legal h2:first-of-type { border-top: none; padding-top: 0; }
+main.legal h3 {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 1.6em 0 0.4em;
+}
+main.legal p { margin: 0 0 1.1em; color: rgba(10, 10, 13, 0.85); }
+main.legal ul, main.legal ol { margin: 0 0 1.1em; padding-left: 1.4em; }
+main.legal li { margin-bottom: 0.5em; color: rgba(10, 10, 13, 0.85); }
+main.legal strong { font-weight: 700; }
+main.legal a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--paper-line); text-underline-offset: 2px; }
+main.legal a:hover { text-decoration-color: var(--ink); }
+.legal-note {
+  background: rgba(255, 77, 35, 0.08);
+  border: 1px solid rgba(255, 77, 35, 0.25);
+  border-radius: 10px;
+  padding: 16px 20px;
+  font-size: 0.92rem;
+  margin: 0 0 2em;
+}
+.legal-note strong { color: var(--coral); }
+.legal-footer {
+  border-top: 1px solid var(--paper-line);
+  margin-top: 3em;
+  padding-top: 1.6em;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--paper-muted);
+}
+@media print {
+  .legal-header { display: none; }
+  body { background: #fff; }
+}

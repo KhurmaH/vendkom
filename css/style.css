@@ -718,6 +718,8 @@ form.submitted .form-success {
   padding-top: 24px; border-top: 1px solid var(--ink-line);
   position: relative; z-index: 1;
 }
+.footer-bottom a { text-decoration: underline; text-decoration-color: var(--ink-line); text-underline-offset: 2px; }
+.footer-bottom a:hover { color: var(--lime); text-decoration-color: var(--lime); }
 
 /* ==========================================================================
    Responsive
