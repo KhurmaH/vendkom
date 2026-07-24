@@ -151,9 +151,9 @@ p { margin: 0 0 1em; }
   gap: 9px;
   padding: 8px 14px 8px 8px;
   border-radius: 999px;
-  background: rgba(251, 248, 242, 0.75);
+  background: rgba(251, 248, 242, 0.94);
   border: 1px solid var(--paper-line);
-  backdrop-filter: blur(12px) saturate(160%);
+  box-shadow: 0 2px 14px rgba(28, 23, 18, 0.06);
   font-family: var(--font-display);
   font-weight: 800;
   font-size: 0.95rem;
@@ -163,7 +163,7 @@ p { margin: 0 0 1em; }
   cursor: pointer;
   transition: background 0.2s ease, transform 0.2s ease;
 }
-.brand-mark:hover { background: rgba(251, 248, 242, 0.95); transform: translateY(-1px); }
+.brand-mark:hover { background: rgba(251, 248, 242, 1); transform: translateY(-1px); }
 .brand-mark:focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
 .brand-mark .mark {
   width: 26px; height: 26px;
@@ -186,18 +186,17 @@ p { margin: 0 0 1em; }
   gap: 16px;
   padding: 10px 6px;
   border-radius: 999px;
-  background: rgba(251, 248, 242, 0.6);
-  backdrop-filter: blur(8px);
+  background: rgba(251, 248, 242, 0.85);
 }
 .chapter-rail i {
   display: block;
   width: 5px; height: 5px;
   border-radius: 50%;
   background: var(--paper-muted);
-  opacity: 0.6;
+  opacity: 0.9;
   transition: background 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
 }
-.chapter-rail i.active { background: var(--lime); opacity: 1; transform: scale(2.1); }
+.chapter-rail i.active { background: var(--lime-dark); opacity: 1; transform: scale(2.1); }
 @media (max-width: 980px) {
   .chapter-rail { display: none; }
 }
@@ -213,7 +212,7 @@ p { margin: 0 0 1em; }
   font-size: 0.74rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--white-dim);
+  color: var(--paper-muted);
 }
 .scroll-cue .line {
   width: 1px;
@@ -275,17 +274,16 @@ p { margin: 0 0 1em; }
   font-size: 0.78rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  opacity: 0.6;
   margin-bottom: 18px;
   display: flex;
   align-items: center;
   gap: 10px;
 }
-.chapter-index::before { content: ''; width: 22px; height: 1px; background: currentColor; opacity: 0.5; }
+.chapter-index::before { content: ''; width: 22px; height: 1px; background: currentColor; opacity: 0.85; }
 
 .chapter-head { position: relative; z-index: 1; max-width: 720px; margin: 0 0 64px; }
 .chapter-head h2 { font-size: clamp(2.2rem, 5vw, 4rem); text-transform: uppercase; letter-spacing: -0.02em; }
-.chapter-head p { font-family: var(--font-body); font-size: 1.08rem; opacity: 0.72; max-width: 52ch; margin-top: 18px; }
+.chapter-head p { font-family: var(--font-body); font-size: 1.08rem; max-width: 52ch; margin-top: 18px; }
 .chapter-head.centered { margin-left: auto; margin-right: auto; text-align: center; }
 .chapter-head.centered p { margin-left: auto; margin-right: auto; }
 
@@ -425,7 +423,7 @@ p { margin: 0 0 1em; }
   width: 54%; top: -4%; right: 6%; padding: 16px 18px;
   background: var(--coral); border-color: var(--coral); color: var(--ink);
 }
-.hv-chip-label { display: block; font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.75; }
+.hv-chip-label { display: block; font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; }
 .hv-chip-value { display: block; font-family: var(--font-display); font-size: 1.3rem; margin-top: 4px; }
 
 .category-marquee { position: relative; z-index: 1; border-top: 1px solid var(--ink-line); overflow: hidden; padding: 20px 0; }
@@ -433,9 +431,9 @@ p { margin: 0 0 1em; }
   display: flex; gap: 40px; width: max-content;
   animation: marquee 26s linear infinite;
   font-family: var(--font-mono); font-size: 0.85rem; font-weight: 600;
-  color: var(--white-dim); text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--paper-muted); text-transform: uppercase; letter-spacing: 0.06em;
 }
-.marquee-track span::after { content: '/'; margin-left: 40px; color: var(--lime); opacity: 0.6; }
+.marquee-track span::after { content: '/'; margin-left: 40px; color: var(--lime-dark); opacity: 0.7; }
 @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 @media (prefers-reduced-motion: reduce) { .marquee-track { animation: none; overflow-x: auto; } }
 
@@ -494,7 +492,7 @@ p { margin: 0 0 1em; }
 }
 .cat-icon svg { width: 22px; height: 22px; }
 .category-card h3 { font-size: 1.1rem; text-transform: none; letter-spacing: -0.01em; }
-.category-card p { font-size: 0.9rem; opacity: 0.7; margin: 0; }
+.category-card p { font-size: 0.9rem; opacity: 0.85; margin: 0; }
 
 /* ==========================================================================
    Vendors directory — real photos, layered motion
@@ -601,7 +599,7 @@ p { margin: 0 0 1em; }
   line-height: 2.1;
   opacity: 0.75;
 }
-.tag-ticker span:not(:last-child)::after { content: '/'; margin: 0 14px; color: var(--lime); opacity: 0.7; }
+.tag-ticker span:not(:last-child)::after { content: '/'; margin: 0 14px; color: var(--lime-dark); opacity: 0.7; }
 
 /* ==========================================================================
    Pricing — scrubbed monthly → annual tick, no toggle
@@ -619,7 +617,8 @@ p { margin: 0 0 1em; }
 .price-features li { position: relative; padding-left: 22px; font-size: 0.92rem; color: var(--paper-ink); }
 .price-features li::before { content: '✓'; position: absolute; left: 0; top: 0; color: var(--coral); font-weight: 700; }
 .price-featured { background: var(--cobalt); color: var(--white); border-color: var(--cobalt); transform: scale(1.04); }
-.price-featured .price-tagline, .price-featured .price-amount .period { color: var(--white-dim); }
+.price-featured .price-tagline, .price-featured .price-amount .period,
+.price-featured .price-billing-note, .price-featured .price-note { color: rgba(255, 255, 255, 0.85); }
 .price-featured .price-features li { color: var(--white); }
 .price-featured .price-features li::before { color: var(--white); }
 .price-badge {
@@ -657,7 +656,7 @@ form.submitted .form-success {
 
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
 .form-field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
-.form-field label { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.65; }
+.form-field label { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; }
 .form-field input, .form-field select, .form-field textarea {
   font-family: var(--font-body); font-size: 0.95rem;
   padding: 13px 16px; border-radius: var(--radius-md);

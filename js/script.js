@@ -76,6 +76,14 @@ if (window.gsap && window.ScrollTrigger) {
   gsap.registerPlugin(ScrollTrigger);
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* Trigger positions are computed at first layout, before web fonts swap in and before
+     below-the-fold images finish loading — both change document height and can leave
+     pins/scrubs firing at the wrong scroll offset until GSAP knows to recalculate. */
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => ScrollTrigger.refresh());
+  }
+  window.addEventListener('load', () => ScrollTrigger.refresh());
+
   /* Scroll progress bar spanning the whole document */
   gsap.to('#scrollProgressFill', {
     scaleX: 1,
