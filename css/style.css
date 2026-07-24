@@ -7,27 +7,25 @@
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  --ink: #14110f;
-  --ink-soft: #1e1a17;
+  --ink: #0a0a0d;
+  --ink-soft: #141419;
   --ink-line: rgba(255, 255, 255, 0.12);
   --white: #ffffff;
   --white-soft: rgba(255, 255, 255, 0.68);
   --white-dim: rgba(255, 255, 255, 0.42);
 
-  --paper: #f2ece0;
-  --paper-soft: #e6ddc9;
-  --paper-line: rgba(20, 17, 15, 0.12);
-  --paper-ink: #1a1512;
-  --paper-muted: #6b5f4f;
+  --paper: #f3efe4;
+  --paper-soft: #e7e0cd;
+  --paper-line: rgba(10, 10, 13, 0.12);
+  --paper-ink: #14140f;
+  --paper-muted: #6b6656;
 
-  /* Desert Dusk palette (July 2026) — variable names kept as --lime/--cobalt/--coral
-     to avoid renaming ~40 usages sitewide; actual hues are now gold/teal/terracotta. */
-  --lime: #d4a24e;
-  --lime-dark: #a87d34;
-  --cobalt: #2d5f5d;
-  --cobalt-light: #6b9c98;
-  --coral: #c4674a;
-  --coral-dark: #9c4e37;
+  --lime: #c4dc6b;
+  --lime-dark: #96ad42;
+  --cobalt: #4a54a3;
+  --cobalt-light: #8891cf;
+  --coral: #e0916f;
+  --coral-dark: #b8654a;
 
   --radius-sm: 8px;
   --radius-md: 14px;
