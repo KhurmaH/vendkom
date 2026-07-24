@@ -137,7 +137,7 @@ p { margin: 0 0 1em; }
 }
 .scroll-progress-fill {
   height: 100%; width: 100%;
-  background: linear-gradient(90deg, var(--lime), var(--coral), var(--cobalt-light));
+  background: linear-gradient(90deg, var(--lime), var(--cobalt-light), var(--coral));
   transform: scaleX(0);
   transform-origin: left center;
 }
