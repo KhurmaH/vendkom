@@ -45,9 +45,12 @@
   }
 
   const isCompact = window.matchMedia('(max-width: 720px)').matches;
-  const COUNT = isCompact ? 700 : 1300;
+  const COUNT = isCompact ? 450 : 800;
   const TUNNEL_LENGTH = 90;
-  const pixelRatioCap = isCompact ? 1.5 : 2;
+  /* A full-viewport canvas's resolution is usually the single biggest GPU
+     cost, well before particle count — kept deliberately conservative here
+     rather than relying on devicePixelRatio at face value. */
+  const pixelRatioCap = isCompact ? 1 : 1.5;
 
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, pixelRatioCap));
   renderer.setClearColor(0x000000, 0);
@@ -165,11 +168,15 @@
     pointer.x += (pointerTarget.x - pointer.x) * 0.03;
     pointer.y += (pointerTarget.y - pointer.y) * 0.03;
 
+    /* Direct rotation instead of camera.lookAt() every frame — lookAt()
+       rebuilds a full orientation matrix from scratch each call; a plain
+       rotation assignment is far cheaper and the parallax is subtle enough
+       that the difference isn't visible. */
     camera.position.x = pointer.x * 1.2;
     camera.position.y = -pointer.y * 0.8;
-    camera.rotation.z = Math.sin(t * 0.05) * 0.02;
     camera.position.z = 2 - scrollProgress * (TUNNEL_LENGTH - 6);
-    camera.lookAt(camera.position.x * 0.5, camera.position.y * 0.5, camera.position.z - 10);
+    camera.rotation.y = pointer.x * 0.12;
+    camera.rotation.x = pointer.y * 0.08;
 
     field.rotation.z = t * 0.01;
 
