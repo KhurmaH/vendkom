@@ -21,10 +21,11 @@
 
   --accent: #6b2337;
   --accent-line: rgba(107, 35, 55, 0.35);
-  --accent-soft: rgba(107, 35, 55, 0.08);
+  --accent-soft: rgba(107, 35, 55, 0.16);
 
   --gold: #8a5c0c;
-  --gold-soft: rgba(138, 92, 12, 0.08);
+  --gold-soft: rgba(138, 92, 12, 0.16);
+  --gold-light: #e8c874;
 
   --container: 1180px;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
@@ -121,11 +122,6 @@ p { margin: 0; }
 /* ==========================================================================
    Hero — oversized asymmetric masthead, no scene, no pin
    ========================================================================== */
-.hero {
-  position: relative;
-  padding: 180px 0 90px;
-  border-bottom: 1px solid var(--line);
-}
 .site-scene {
   position: fixed;
   inset: 0;
@@ -135,6 +131,11 @@ p { margin: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .site-scene { display: none; }
+}
+.hero {
+  position: relative;
+  padding: 180px 0 90px;
+  border-bottom: 1px solid var(--line);
 }
 .hero-mark {
   position: absolute;
@@ -189,6 +190,28 @@ p { margin: 0; }
   border-bottom: 1px solid var(--line);
 }
 .section:last-of-type { border-bottom: none; }
+
+/* Real color on the page itself — not tied to any animation. A couple of
+   sections carry a tint or a full color block instead of every section
+   sharing one flat bone background. */
+#categories { background: var(--gold-soft); }
+#for-vendors { background: var(--accent-soft); }
+#get-started {
+  background: var(--accent);
+  color: var(--white);
+}
+#get-started .section-dek,
+#get-started .gs-block-label,
+#get-started .form-field label { color: rgba(255, 255, 255, 0.75); }
+#get-started .section-num { -webkit-text-stroke-color: rgba(255, 255, 255, 0.18); }
+#get-started .form-field input,
+#get-started .form-field select,
+#get-started .form-field textarea { color: var(--white); border-bottom-color: rgba(255, 255, 255, 0.3); }
+#get-started .form-field input:focus,
+#get-started .form-field select:focus,
+#get-started .form-field textarea:focus { border-bottom-color: var(--gold-light); }
+#get-started .submit-cta { color: var(--gold-light); border-bottom-color: var(--gold-light); }
+#get-started .gs-block:first-child { border-right-color: rgba(255, 255, 255, 0.16); }
 .section-num {
   position: absolute;
   top: 100px; right: 32px;
@@ -242,12 +265,10 @@ p { margin: 0; }
   border-left: 2px solid transparent;
   transition: border-left-color 0.3s var(--ease), padding-left 0.3s var(--ease);
 }
-.category-row:hover { border-left-color: var(--accent); padding-left: 16px; }
-.category-row:nth-child(even):hover { border-left-color: var(--gold); }
+.category-row:hover { border-left-color: var(--gold); padding-left: 16px; }
 .category-row-num {
-  font-family: var(--font-mono); font-size: 0.9rem; color: var(--accent);
+  font-family: var(--font-mono); font-size: 0.9rem; color: var(--gold);
 }
-.category-row:nth-child(even) .category-row-num { color: var(--gold); }
 .category-row h3 {
   font-size: 1.5rem; font-weight: 600;
 }
@@ -281,13 +302,9 @@ p { margin: 0; }
   align-items: center;
   padding: 26px 0;
   border-bottom: 1px solid var(--line);
-  background: transparent;
-  transition: background 0.3s var(--ease);
 }
-.vendor-row:hover { background: var(--gold-soft); }
 .vendor-row-photo { width: 90px; height: 64px; overflow: hidden; }
-.vendor-row-photo img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s var(--ease); }
-.vendor-row:hover .vendor-row-photo img { transform: scale(1.08); }
+.vendor-row-photo img { width: 100%; height: 100%; object-fit: cover; }
 .vendor-row h4 { font-size: 1.1rem; font-weight: 600; margin-bottom: 4px; }
 .vendor-row p { color: var(--ink-soft); font-size: 0.9rem; }
 .vendor-row-tag {
@@ -329,7 +346,6 @@ p { margin: 0; }
   border-bottom: 1px solid var(--line);
 }
 .checklist-mark { color: var(--accent); font-family: var(--font-display); font-size: 1.2rem; font-style: italic; }
-.checklist-item:nth-child(even) .checklist-mark { color: var(--gold); }
 .checklist-item h4 { font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; }
 .checklist-item p { color: var(--ink-soft); font-size: 0.96rem; }
 

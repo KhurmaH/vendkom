@@ -1,16 +1,18 @@
-/* ---------- Site-wide particle field — one fixed full-page canvas threading
-   behind every section instead of an isolated hero effect. A single Three.js
-   Points cloud (one draw call, unlit, no lighting cost), camera dollying
-   through it as you scroll the WHOLE document. Particle color is banded by
-   depth so the field itself echoes the section you're approaching (gold
-   around Categories, oxblood around Vendors/For Vendors and the finale).
+/* ---------- The snake: a single continuous colored tube winding through 3D
+   space, threading behind the entire page. One mesh, one draw call, unlit
+   (MeshBasicMaterial, no lighting cost) — replaces an earlier particle-dot
+   version that didn't land. The camera travels along the tube's length as
+   you scroll the whole document, so it reads as one continuous shape the
+   page moves through rather than ambient background noise.
 
-   No GSAP/ScrollTrigger dependency — the editorial rebuild dropped those, so
-   scroll progress here is just a plain rAF-throttled scroll listener.
+   Color runs along the tube's length via vertex colors, banded to echo the
+   section you're approaching (gold near Categories, oxblood near Vendors/
+   For Vendors and again at the Get Started finale) — the page's own section
+   backgrounds carry most of the color now, this ties them together visually.
 
    Bails out cleanly with no canvas if WebGL/Three.js aren't available or the
    GPU is software-emulated, skipped entirely under prefers-reduced-motion,
-   and pauses via the Page Visibility API when the tab isn't active. ---------- */
+   pauses via the Page Visibility API when the tab isn't active. ---------- */
 (() => {
   const canvas = document.getElementById('siteScene');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -18,7 +20,7 @@
 
   let renderer;
   try {
-    renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false, powerPreference: 'high-performance' });
+    renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
   } catch (e) {
     return;
   }
@@ -37,75 +39,65 @@
   }
 
   const isCompact = window.matchMedia('(max-width: 720px)').matches;
-  const COUNT = isCompact ? 380 : 700;
   const TUNNEL_LENGTH = 90;
-  const pixelRatioCap = isCompact ? 1 : 1.4;
+  const pixelRatioCap = isCompact ? 1.3 : 2;
 
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, pixelRatioCap));
   renderer.setClearColor(0x000000, 0);
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 200);
-  camera.position.set(0, 0, 2);
+  const camera = new THREE.PerspectiveCamera(62, 1, 0.1, 200);
+  camera.position.set(0, 0, 3);
 
-  function makeParticleTexture() {
-    const size = 48;
-    const c = document.createElement('canvas');
-    c.width = c.height = size;
-    const ctx = c.getContext('2d');
-    const grad = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
-    grad.addColorStop(0, 'rgba(255,255,255,1)');
-    grad.addColorStop(0.45, 'rgba(255,255,255,0.5)');
-    grad.addColorStop(1, 'rgba(255,255,255,0)');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, size, size);
-    return new THREE.CanvasTexture(c);
+  /* A wandering path — sine/cosine offsets in x/y as it travels down z —
+     built from a handful of control points and smoothed into a curve. */
+  const controlPoints = [];
+  const SEGMENTS = 14;
+  for (let i = 0; i <= SEGMENTS; i++) {
+    const t = i / SEGMENTS;
+    const z = -t * TUNNEL_LENGTH;
+    const x = Math.sin(t * Math.PI * 3.4) * 4.2;
+    const y = Math.cos(t * Math.PI * 2.6) * 2.6;
+    controlPoints.push(new THREE.Vector3(x, y, z));
   }
+  const curve = new THREE.CatmullRomCurve3(controlPoints);
+  const tubeGeometry = new THREE.TubeGeometry(curve, isCompact ? 160 : 260, isCompact ? 0.34 : 0.4, 8, false);
 
   /* Depth bands (0 = top of page, 1 = bottom) echo the page's own section
-     order: intro -> categories(gold) -> vendors/for-vendors(oxblood) ->
-     pricing/faq(neutral) -> get-started finale(oxblood). */
+     order and its new section-background colors: intro -> categories(gold)
+     -> vendors/for-vendors(oxblood) -> pricing/faq(neutral) -> get-started
+     finale(oxblood). */
   const bands = [
-    { end: 0.16, colors: [0xece2cd, 0x1c1712] },
-    { end: 0.36, colors: [0x8a5c0c, 0xece2cd] },
-    { end: 0.64, colors: [0x6b2337, 0x1c1712] },
-    { end: 0.82, colors: [0xece2cd, 0x8a5c0c] },
-    { end: 1.01, colors: [0x6b2337, 0x8a5c0c] },
+    { end: 0.16, color: new THREE.Color(0xece2cd) },
+    { end: 0.36, color: new THREE.Color(0x8a5c0c) },
+    { end: 0.64, color: new THREE.Color(0x6b2337) },
+    { end: 0.82, color: new THREE.Color(0xece2cd) },
+    { end: 1.01, color: new THREE.Color(0x6b2337) },
   ];
-  function colorForDepth(depthFraction) {
-    const band = bands.find(b => depthFraction <= b.end) || bands[bands.length - 1];
-    return new THREE.Color(band.colors[Math.random() < 0.5 ? 0 : 1]);
+  function colorForT(t) {
+    const band = bands.find(b => t <= b.end) || bands[bands.length - 1];
+    return band.color;
   }
 
-  const positions = new Float32Array(COUNT * 3);
-  const colors = new Float32Array(COUNT * 3);
-  for (let i = 0; i < COUNT; i++) {
-    const radius = 3 + Math.random() * 9;
-    const angle = Math.random() * Math.PI * 2;
-    const z = -Math.random() * TUNNEL_LENGTH;
-    positions[i * 3] = Math.cos(angle) * radius;
-    positions[i * 3 + 1] = Math.sin(angle) * radius * 0.6;
-    positions[i * 3 + 2] = z;
-    const c = colorForDepth(-z / TUNNEL_LENGTH);
+  const uv = tubeGeometry.attributes.uv;
+  const vertexCount = tubeGeometry.attributes.position.count;
+  const colors = new Float32Array(vertexCount * 3);
+  for (let i = 0; i < vertexCount; i++) {
+    const c = colorForT(uv.getY(i));
     colors[i * 3] = c.r;
     colors[i * 3 + 1] = c.g;
     colors[i * 3 + 2] = c.b;
   }
-  const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  tubeGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
-  const material = new THREE.PointsMaterial({
-    size: isCompact ? 0.5 : 0.62,
-    map: makeParticleTexture(),
+  const material = new THREE.MeshBasicMaterial({
     vertexColors: true,
     transparent: true,
-    opacity: 0.85,
-    depthWrite: false,
-    sizeAttenuation: true,
+    opacity: 0.92,
+    side: THREE.DoubleSide,
   });
-  const field = new THREE.Points(geometry, material);
-  scene.add(field);
+  const snake = new THREE.Mesh(tubeGeometry, material);
+  scene.add(snake);
 
   function fitCanvas() {
     const w = Math.max(1, window.innerWidth);
@@ -126,8 +118,8 @@
     });
   }
 
-  /* Plain scroll listener (no GSAP/ScrollTrigger in this build) — just a
-     ratio of how far down the whole document you've scrolled. */
+  /* Plain scroll listener (no GSAP/ScrollTrigger in this build) — the
+     camera travels the tube's length in step with the whole document. */
   let scrollProgress = 0;
   let scrollQueued = false;
   function updateScrollProgress() {
@@ -152,13 +144,16 @@
     pointer.x += (pointerTarget.x - pointer.x) * 0.03;
     pointer.y += (pointerTarget.y - pointer.y) * 0.03;
 
-    camera.position.x = pointer.x * 1.2;
-    camera.position.y = -pointer.y * 0.8;
-    camera.position.z = 2 - scrollProgress * (TUNNEL_LENGTH - 6);
-    camera.rotation.y = pointer.x * 0.12;
-    camera.rotation.x = pointer.y * 0.08;
+    const travel = Math.min(0.985, scrollProgress);
+    const point = curve.getPointAt(travel);
+    const tangent = curve.getTangentAt(travel);
 
-    field.rotation.z = t * 0.01;
+    camera.position.x = point.x + pointer.x * 1.4;
+    camera.position.y = point.y - pointer.y * 1;
+    camera.position.z = point.z + 3.2;
+    camera.lookAt(point.x + tangent.x * 4, point.y + tangent.y * 4, point.z + tangent.z * 4);
+
+    snake.rotation.z = Math.sin(t * 0.03) * 0.015;
 
     renderer.render(scene, camera);
   }
