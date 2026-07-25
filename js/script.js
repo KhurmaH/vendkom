@@ -124,6 +124,29 @@ if (window.gsap && window.ScrollTrigger) {
         .to('.category-marquee', { opacity: 0, ease: 'none' }, 0);
     }
 
+    /* Hero visual tilts toward the cursor in real 3D (perspective + rotateX/rotateY) —
+       quickTo builds one reusable tween per axis so this costs nothing beyond the
+       transform itself, same pattern already used for the card tilts elsewhere. */
+    const heroVisualImg = document.getElementById('heroVisualImg');
+    if (heroVisualImg && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      const setTiltX = gsap.quickTo(heroVisualImg, 'rotateX', { duration: 0.6, ease: 'power2.out' });
+      const setTiltY = gsap.quickTo(heroVisualImg, 'rotateY', { duration: 0.6, ease: 'power2.out' });
+      const setScale = gsap.quickTo(heroVisualImg, 'scale', { duration: 0.6, ease: 'power2.out' });
+      heroSection.addEventListener('mousemove', e => {
+        const rect = heroSection.getBoundingClientRect();
+        const relX = (e.clientX - rect.left) / rect.width - 0.5;
+        const relY = (e.clientY - rect.top) / rect.height - 0.5;
+        setTiltY(relX * 10);
+        setTiltX(-relY * 10);
+        setScale(1.04);
+      });
+      heroSection.addEventListener('mouseleave', () => {
+        setTiltX(0);
+        setTiltY(0);
+        setScale(1);
+      });
+    }
+
     /* Headline unmasks in a clean clip-path wipe, timed to the curtain lifting */
     const heroH1 = document.querySelector('.hero h1');
     if (heroH1) {
