@@ -124,26 +124,40 @@ if (window.gsap && window.ScrollTrigger) {
         .to('.category-marquee', { opacity: 0, ease: 'none' }, 0);
     }
 
-    /* Hero visual tilts toward the cursor in real 3D (perspective + rotateX/rotateY) —
-       quickTo builds one reusable tween per axis so this costs nothing beyond the
-       transform itself, same pattern already used for the card tilts elsewhere. */
-    const heroVisualImg = document.getElementById('heroVisualImg');
-    if (heroVisualImg && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-      const setTiltX = gsap.quickTo(heroVisualImg, 'rotateX', { duration: 0.6, ease: 'power2.out' });
-      const setTiltY = gsap.quickTo(heroVisualImg, 'rotateY', { duration: 0.6, ease: 'power2.out' });
-      const setScale = gsap.quickTo(heroVisualImg, 'scale', { duration: 0.6, ease: 'power2.out' });
+    /* Hero visual: two real depth layers (cut-out tent foreground + flat-color
+       background) tilting at DIFFERENT rates toward the cursor — that mismatch is
+       what actually reads as depth, not just one flat image rotating. Both driven
+       by the same mousemove via quickTo, so it's still just two cheap transforms. */
+    const heroVisualBg = document.getElementById('heroVisualBg');
+    const heroVisualFg = document.getElementById('heroVisualFg');
+    if (heroVisualBg && heroVisualFg && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      const setBgTiltX = gsap.quickTo(heroVisualBg, 'rotateX', { duration: 0.7, ease: 'power2.out' });
+      const setBgTiltY = gsap.quickTo(heroVisualBg, 'rotateY', { duration: 0.7, ease: 'power2.out' });
+      const setFgTiltX = gsap.quickTo(heroVisualFg, 'rotateX', { duration: 0.5, ease: 'power2.out' });
+      const setFgTiltY = gsap.quickTo(heroVisualFg, 'rotateY', { duration: 0.5, ease: 'power2.out' });
+      const setFgX = gsap.quickTo(heroVisualFg, 'x', { duration: 0.5, ease: 'power2.out' });
+      const setFgY = gsap.quickTo(heroVisualFg, 'y', { duration: 0.5, ease: 'power2.out' });
+      const setFgScale = gsap.quickTo(heroVisualFg, 'scale', { duration: 0.5, ease: 'power2.out' });
+
       heroSection.addEventListener('mousemove', e => {
         const rect = heroSection.getBoundingClientRect();
         const relX = (e.clientX - rect.left) / rect.width - 0.5;
         const relY = (e.clientY - rect.top) / rect.height - 0.5;
-        setTiltY(relX * 10);
-        setTiltX(-relY * 10);
-        setScale(1.04);
+
+        setBgTiltY(relX * 6);
+        setBgTiltX(-relY * 6);
+
+        setFgTiltY(relX * 22);
+        setFgTiltX(-relY * 22);
+        setFgX(relX * 34);
+        setFgY(relY * 22);
+        setFgScale(1.05);
       });
       heroSection.addEventListener('mouseleave', () => {
-        setTiltX(0);
-        setTiltY(0);
-        setScale(1);
+        setBgTiltX(0); setBgTiltY(0);
+        setFgTiltX(0); setFgTiltY(0);
+        setFgX(0); setFgY(0);
+        setFgScale(1);
       });
     }
 
