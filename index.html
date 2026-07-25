@@ -40,6 +40,7 @@
 
   <!-- ============ HERO ============ -->
   <section class="hero" id="top">
+    <canvas class="hero-scene" id="heroScene" aria-hidden="true"></canvas>
     <span class="hero-mark" aria-hidden="true">V</span>
     <div class="container hero-inner">
       <div class="hero-copy reveal">
@@ -305,8 +306,8 @@
         </div>
 
         <div class="price-column reveal">
-          <span class="plan-name">Pro</span>
-          <h3 class="price-amount">75 JD<span class="period">/mo</span></h3>
+          <span class="plan-name is-gold">Pro</span>
+          <h3 class="price-amount is-gold">75 JD<span class="period">/mo</span></h3>
           <p class="price-tagline">Full-service growth &amp; logistics — 59 JD/mo billed annually</p>
           <p class="price-note">6% commission per booking</p>
           <ul class="price-features">
@@ -458,6 +459,8 @@
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
+<script src="js/hero-scene.js"></script>
 <script src="js/script.js"></script>
 </body>
 </html>
