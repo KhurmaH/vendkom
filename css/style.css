@@ -241,7 +241,7 @@ p { margin: 0 0 1em; }
    ========================================================================== */
 .chapter { position: relative; padding: 132px 0; overflow: hidden; }
 .chapter-theme-ink { background: var(--ink); color: var(--white); }
-.chapter-theme-paper { background: rgba(251, 248, 242, 0.94); color: var(--paper-ink); }
+.chapter-theme-paper { background: rgba(251, 248, 242, 0.86); color: var(--paper-ink); }
 .chapter-theme-lime { background: var(--lime); color: var(--ink); }
 .chapter-theme-cobalt { background: var(--cobalt); color: var(--white); }
 .chapter-theme-coral { background: var(--coral); color: var(--ink); }
@@ -643,7 +643,7 @@ form.submitted .form-success {
    ========================================================================== */
 .site-footer {
   position: relative;
-  background: rgba(251, 248, 242, 0.94);
+  background: rgba(251, 248, 242, 0.86);
   color: var(--paper-muted);
   padding: 120px 0 48px;
   border-top: 1px solid var(--paper-line);

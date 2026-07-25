@@ -112,11 +112,14 @@
   geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
   const material = new THREE.PointsMaterial({
-    size: isCompact ? 0.5 : 0.62,
+    /* Bigger, more opaque sprites read as more present without costing more
+       than the size/count we already tuned down for performance — this is a
+       per-pixel cost, not an extra-geometry cost. */
+    size: isCompact ? 0.62 : 0.78,
     map: makeParticleTexture(),
     vertexColors: true,
     transparent: true,
-    opacity: 0.85,
+    opacity: 0.95,
     blending: THREE.AdditiveBlending,
     depthWrite: false,
     sizeAttenuation: true,

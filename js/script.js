@@ -152,13 +152,33 @@ if (window.gsap && window.ScrollTrigger) {
         ...vars,
       });
     };
-    document.querySelectorAll('.chapter-head').forEach(head => fadeUpOnScroll(head, [head], { stagger: 0 }));
+    /* Same idea, but with real 3D rotation instead of a flat slide — one-shot on scroll-in
+       (toggleActions: play once), so unlike the scrubbed effects above this costs nothing
+       once it's played; a shared visual language (perspective + rotate) tying chapter
+       entrances to the same depth feel as the pricing cards and the background field. */
+    const tiltInOnScroll = (trigger, targets, vars = {}) => {
+      if (!trigger || !targets || !targets.length) return;
+      gsap.set(targets, { transformPerspective: 900 });
+      gsap.from(targets, {
+        opacity: 0, rotateX: 32, transformOrigin: 'top center',
+        duration: 0.9, ease: 'power3.out', stagger: 0.08,
+        scrollTrigger: { trigger, start: 'top 85%', toggleActions: 'play none none none' },
+        ...vars,
+      });
+    };
+    document.querySelectorAll('.chapter-head').forEach(head => tiltInOnScroll(head, [head], { stagger: 0 }));
     const tagTicker = document.querySelector('.tag-ticker');
     if (tagTicker) fadeUpOnScroll(tagTicker, [tagTicker], { y: 0, stagger: 0 });
     const statCard = document.querySelector('.vendors-visual .stat-card');
-    if (statCard) fadeUpOnScroll(statCard, [statCard]);
+    if (statCard) {
+      tiltInOnScroll(statCard, [statCard], {
+        rotateX: 0, rotateY: -38, transformOrigin: 'left center',
+      });
+    }
     fadeUpOnScroll(document.querySelector('.stat-counter-row'), gsap.utils.toArray('.stat-counter'), { stagger: 0.1 });
-    document.querySelectorAll('.gs-block').forEach(block => fadeUpOnScroll(block, [block], { stagger: 0 }));
+    document.querySelectorAll('.gs-block').forEach(block => {
+      tiltInOnScroll(block, [block], { rotateX: -26, transformOrigin: 'bottom center', stagger: 0 });
+    });
 
     /* How it works: each lane slides in from its own side — organizer from the left, vendor from the right */
     document.querySelectorAll('.lane').forEach(lane => {
@@ -189,6 +209,18 @@ if (window.gsap && window.ScrollTrigger) {
       });
     }
 
+    /* Cards flip in from face-down, once, right as the filmstrip section arrives —
+       same one-shot pattern as the other 3D entrances, not tied to the horizontal scrub. */
+    const categoryCards = gsap.utils.toArray('.category-card');
+    if (categoryCards.length) {
+      gsap.set(categoryCards, { transformPerspective: 600 });
+      gsap.from(categoryCards, {
+        opacity: 0, rotateY: -55, transformOrigin: 'left center',
+        duration: 0.8, ease: 'power3.out', stagger: 0.1,
+        scrollTrigger: { trigger: categoriesPin || '.categories-pin', start: 'top 80%', toggleActions: 'play none none none' },
+      });
+    }
+
     /* Each category card tilts toward the cursor while it drifts past — one quickTo pair
        built per card up front, reused on every mousemove instead of tweening from scratch. */
     document.querySelectorAll('.category-card').forEach(card => {
@@ -214,15 +246,15 @@ if (window.gsap && window.ScrollTrigger) {
         'inset(0 100% 0 0)', 'inset(0 0 0 100%)', 'inset(100% 0 0 0)', 'inset(0 0 100% 0)',
       ];
       gsap.utils.toArray(vendorGrid.querySelectorAll('.vendor-card')).forEach((card, i) => {
+        gsap.set(card, { transformPerspective: 700 });
         gsap.from(card, {
           clipPath: wipeDirections[i % wipeDirections.length],
+          rotateY: i % 2 === 0 ? -22 : 22,
           opacity: 0,
           duration: 0.8,
           ease: 'power3.out',
           scrollTrigger: { trigger: card, start: 'top 88%', toggleActions: 'play none none none' },
         });
-
-        gsap.set(card, { transformPerspective: 700 });
         const setTiltX = gsap.quickTo(card, 'rotateX', { duration: 0.4, ease: 'power2.out' });
         const setTiltY = gsap.quickTo(card, 'rotateY', { duration: 0.4, ease: 'power2.out' });
         card.addEventListener('mousemove', e => {
@@ -317,10 +349,15 @@ if (window.gsap && window.ScrollTrigger) {
     });
 
     /* FAQ: answers open and close on their own as each question crosses the middle of the screen */
-    gsap.from('.faq-item h3', {
-      opacity: 0, y: 12, duration: 0.6, stagger: 0.05,
-      scrollTrigger: { trigger: '.faq-list', start: 'top 82%', toggleActions: 'play none none none' },
-    });
+    const faqItems = gsap.utils.toArray('.faq-item');
+    if (faqItems.length) {
+      gsap.set(faqItems, { transformPerspective: 800 });
+      gsap.from(faqItems, {
+        opacity: 0, rotateX: 24, y: 12, transformOrigin: 'top center',
+        duration: 0.7, ease: 'power3.out', stagger: 0.06,
+        scrollTrigger: { trigger: '.faq-list', start: 'top 82%', toggleActions: 'play none none none' },
+      });
+    }
     document.querySelectorAll('.faq-item').forEach(item => {
       const answer = item.querySelector('.faq-a');
       if (!answer) return;
