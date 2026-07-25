@@ -6,11 +6,13 @@
    ========================================================================== */
 :root {
   --ink: #1c1712;
-  --paper: #f7f1e6;
-  --paper-line: rgba(28, 23, 18, 0.14);
-  --paper-muted: #6b6656;
-  --accent: #6b2337;
-  --font-display: 'Fraunces', Georgia, serif;
+  --paper: #fbf8f2;
+  --paper-line: rgba(28, 23, 18, 0.12);
+  --paper-muted: #7d7261;
+  --lime: #4cb05f;
+  --coral: #e64562;
+  --coral-dark: #a63247;
+  --font-display: 'Archivo', 'Inter', -apple-system, sans-serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 }
@@ -36,17 +38,19 @@ body {
   gap: 10px;
 }
 .legal-header .mark {
-  font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 600;
-  font-size: 1.1rem;
-  color: var(--accent);
+  width: 28px; height: 28px;
+  border-radius: 7px;
+  background: var(--lime);
+  color: var(--ink);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 800; font-size: 0.95rem;
 }
 .legal-header a {
   color: var(--ink);
   text-decoration: none;
   font-family: var(--font-display);
-  font-weight: 600;
+  font-weight: 800;
+  text-transform: uppercase;
   font-size: 1rem;
   letter-spacing: 0.01em;
 }
@@ -60,14 +64,15 @@ main.legal {
   font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--accent);
+  color: var(--coral-dark);
   margin-bottom: 14px;
   display: block;
 }
 main.legal h1 {
   font-family: var(--font-display);
   font-size: clamp(2rem, 4.5vw, 2.8rem);
-  font-weight: 600;
+  font-weight: 800;
+  text-transform: uppercase;
   letter-spacing: -0.01em;
   margin: 0 0 8px;
   line-height: 1.05;
@@ -81,7 +86,7 @@ main.legal h1 {
 main.legal h2 {
   font-family: var(--font-display);
   font-size: 1.35rem;
-  font-weight: 600;
+  font-weight: 800;
   margin: 2.4em 0 0.6em;
   padding-top: 0.4em;
   border-top: 1px solid var(--paper-line);
@@ -90,7 +95,7 @@ main.legal h2:first-of-type { border-top: none; padding-top: 0; }
 main.legal h3 {
   font-family: var(--font-display);
   font-size: 1.05rem;
-  font-weight: 600;
+  font-weight: 700;
   margin: 1.6em 0 0.4em;
 }
 main.legal p { margin: 0 0 1.1em; color: rgba(28, 23, 18, 0.85); }
@@ -100,14 +105,14 @@ main.legal strong { font-weight: 700; }
 main.legal a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--paper-line); text-underline-offset: 2px; }
 main.legal a:hover { text-decoration-color: var(--ink); }
 .legal-note {
-  background: rgba(107, 35, 55, 0.06);
-  border: 1px solid rgba(107, 35, 55, 0.22);
-  border-radius: 4px;
+  background: rgba(230, 69, 98, 0.08);
+  border: 1px solid rgba(230, 69, 98, 0.25);
+  border-radius: 10px;
   padding: 16px 20px;
   font-size: 0.92rem;
   margin: 0 0 2em;
 }
-.legal-note strong { color: var(--accent); }
+.legal-note strong { color: var(--coral-dark); }
 .legal-footer {
   border-top: 1px solid var(--paper-line);
   margin-top: 3em;
