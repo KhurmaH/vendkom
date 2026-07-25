@@ -122,16 +122,6 @@ p { margin: 0; }
 /* ==========================================================================
    Hero — oversized asymmetric masthead, no scene, no pin
    ========================================================================== */
-.site-scene {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1;
-}
-@media (prefers-reduced-motion: reduce) {
-  .site-scene { display: none; }
-}
 .hero {
   position: relative;
   padding: 180px 0 90px;
