@@ -5,12 +5,13 @@
    than the brand's kinetic personality.
    ========================================================================== */
 :root {
-  --ink: #0a0a0d;
-  --paper: #f3efe4;
-  --paper-line: rgba(10, 10, 13, 0.14);
-  --paper-muted: #6b6656;
-  --lime: #d6ff3f;
-  --coral: #ff4d23;
+  --ink: #1c1712;
+  --paper: #fbf8f2;
+  --paper-line: rgba(28, 23, 18, 0.12);
+  --paper-muted: #7d7261;
+  --lime: #4cb05f;
+  --coral: #e64562;
+  --coral-dark: #a63247;
   --font-display: 'Archivo', 'Inter', -apple-system, sans-serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -63,7 +64,7 @@ main.legal {
   font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--coral);
+  color: var(--coral-dark);
   margin-bottom: 14px;
   display: block;
 }
@@ -97,21 +98,21 @@ main.legal h3 {
   font-weight: 700;
   margin: 1.6em 0 0.4em;
 }
-main.legal p { margin: 0 0 1.1em; color: rgba(10, 10, 13, 0.85); }
+main.legal p { margin: 0 0 1.1em; color: rgba(28, 23, 18, 0.85); }
 main.legal ul, main.legal ol { margin: 0 0 1.1em; padding-left: 1.4em; }
-main.legal li { margin-bottom: 0.5em; color: rgba(10, 10, 13, 0.85); }
+main.legal li { margin-bottom: 0.5em; color: rgba(28, 23, 18, 0.85); }
 main.legal strong { font-weight: 700; }
 main.legal a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--paper-line); text-underline-offset: 2px; }
 main.legal a:hover { text-decoration-color: var(--ink); }
 .legal-note {
-  background: rgba(255, 77, 35, 0.08);
-  border: 1px solid rgba(255, 77, 35, 0.25);
+  background: rgba(230, 69, 98, 0.08);
+  border: 1px solid rgba(230, 69, 98, 0.25);
   border-radius: 10px;
   padding: 16px 20px;
   font-size: 0.92rem;
   margin: 0 0 2em;
 }
-.legal-note strong { color: var(--coral); }
+.legal-note strong { color: var(--coral-dark); }
 .legal-footer {
   border-top: 1px solid var(--paper-line);
   margin-top: 3em;
