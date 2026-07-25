@@ -117,7 +117,7 @@ if (window.gsap && window.ScrollTrigger) {
     const heroGhost = document.querySelector('.hero-ghost');
     if (heroSection && heroGhost) {
       gsap.timeline({
-        scrollTrigger: { trigger: heroSection, start: 'top top', end: '+=90%', scrub: 0.6, pin: true },
+        scrollTrigger: { trigger: heroSection, start: 'top top', end: '+=45%', scrub: 0.5, pin: true },
       })
         .to(heroGhost, { scale: 1.25, y: 40, opacity: 0.35, ease: 'none' }, 0)
         .to('.hero-copy', { opacity: 0, y: -60, ease: 'none' }, 0)
