@@ -247,6 +247,7 @@ if (window.gsap && window.ScrollTrigger) {
     const checklist = document.getElementById('vendorChecklist');
     if (checklist) {
       const items = Array.from(checklist.querySelectorAll('.checklist-item'));
+      let lastDoneCount = -1;
       ScrollTrigger.create({
         trigger: checklist,
         start: 'top 75%',
@@ -254,6 +255,8 @@ if (window.gsap && window.ScrollTrigger) {
         scrub: 0.4,
         onUpdate: self => {
           const doneCount = Math.round(self.progress * items.length);
+          if (doneCount === lastDoneCount) return;
+          lastDoneCount = doneCount;
           items.forEach((item, i) => item.classList.toggle('is-done', i < doneCount));
         },
       });
@@ -289,14 +292,26 @@ if (window.gsap && window.ScrollTrigger) {
       if (!amountEl) return;
       const monthly = parseFloat(amountEl.dataset.monthly);
       const annual = parseFloat(amountEl.dataset.annual);
+      let lastAmount = null;
+      let lastNote = null;
       ScrollTrigger.create({
         trigger: card,
         start: 'top 75%',
         end: 'top 25%',
         scrub: 0.5,
         onUpdate: self => {
-          amountEl.textContent = `${Math.round(gsap.utils.interpolate(monthly, annual, self.progress))} JD`;
-          if (noteEl) noteEl.textContent = self.progress > 0.5 ? 'billed annually · save ~20%' : 'billed monthly';
+          const amount = Math.round(gsap.utils.interpolate(monthly, annual, self.progress));
+          if (amount !== lastAmount) {
+            lastAmount = amount;
+            amountEl.textContent = `${amount} JD`;
+          }
+          if (noteEl) {
+            const note = self.progress > 0.5 ? 'billed annually · save ~20%' : 'billed monthly';
+            if (note !== lastNote) {
+              lastNote = note;
+              noteEl.textContent = note;
+            }
+          }
         },
       });
     });

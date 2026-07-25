@@ -19,14 +19,33 @@
 
   let renderer;
   try {
-    renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    /* antialias is wasted here — the particles are soft round sprites via a
+       texture, not hard-edged geometry, so MSAA adds GPU cost for no visible
+       benefit. */
+    renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false, powerPreference: 'high-performance' });
   } catch (e) {
     return;
   }
   if (!renderer) return;
 
+  /* Bail out entirely on a software/CPU-emulated GPU (e.g. hardware
+     acceleration disabled, or a VM/remote desktop) — no amount of scene
+     simplification fixes that, and rendering nothing beats rendering
+     something unusably slow. */
+  try {
+    const gl = renderer.getContext();
+    const info = gl.getExtension('WEBGL_debug_renderer_info');
+    const rendererName = info ? gl.getParameter(info.UNMASKED_RENDERER_WEBGL) : '';
+    if (/swiftshader|llvmpipe|software/i.test(rendererName)) {
+      renderer.dispose();
+      return;
+    }
+  } catch (e) {
+    /* If the check itself fails, assume the GPU is fine and continue. */
+  }
+
   const isCompact = window.matchMedia('(max-width: 720px)').matches;
-  const COUNT = isCompact ? 800 : 1600;
+  const COUNT = isCompact ? 700 : 1300;
   const TUNNEL_LENGTH = 90;
   const pixelRatioCap = isCompact ? 1.5 : 2;
 
