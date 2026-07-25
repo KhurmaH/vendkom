@@ -67,7 +67,8 @@
 
   <!-- ============ HERO ============ -->
   <section class="hero" id="top">
-    <div class="hero-glow" id="heroGlow" aria-hidden="true"></div>
+    <canvas class="hero-scene" id="heroScene" aria-hidden="true"></canvas>
+    <div class="hero-scrim" aria-hidden="true"></div>
     <span class="hero-ghost" aria-hidden="true">VENDKOM</span>
     <div class="chapter-flash" id="heroFlash" aria-hidden="true"></div>
 
@@ -86,38 +87,6 @@
           <li>No booking headaches</li>
         </ul>
         <div class="scroll-cue"><span class="line" aria-hidden="true"></span>Scroll to explore</div>
-      </div>
-
-      <div class="hero-visual" aria-hidden="true">
-        <div class="hv-card hv-card-main" data-parallax="0.06">
-          <div class="hv-thumb"><img class="vendor-photo" src="https://picsum.photos/seed/vendkom-photo-1/640/480" alt="Golden Hour Studio photography setup" loading="lazy"></div>
-          <div class="hv-card-body">
-            <div class="hv-row">
-              <span class="hv-tag">Photography</span>
-              <span class="hv-rating">★ 4.9</span>
-            </div>
-            <p class="hv-title">Golden Hour Studio</p>
-            <p class="hv-meta">Weddings · Portraits · 2 events/wk</p>
-            <div class="hv-row hv-row-end">
-              <span class="hv-price">From 450 JD</span>
-              <span class="hv-btn">Booked</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="hv-card hv-card-float" data-parallax="0.12">
-          <p class="hv-float-title">Logistics, handled</p>
-          <ul class="hv-checklist">
-            <li>Contract sent</li>
-            <li>Deposit collected</li>
-            <li>Vendor confirmed</li>
-          </ul>
-        </div>
-
-        <div class="hv-card hv-card-chip" data-parallax="0.18">
-          <span class="hv-chip-label">Marketing boost</span>
-          <span class="hv-chip-value">+128% profile views</span>
-        </div>
       </div>
     </div>
 
@@ -568,6 +537,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
+<script src="js/hero-scene.js"></script>
 <script src="js/script.js"></script>
 </body>
 </html>

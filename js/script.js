@@ -99,7 +99,7 @@ if (window.gsap && window.ScrollTrigger) {
     const cursorY = gsap.quickTo(cursorDot, 'y', { duration: 0.35, ease: 'power3.out' });
     window.addEventListener('mousemove', e => { cursorX(e.clientX); cursorY(e.clientY); });
     document.querySelectorAll(
-      '.submit-cta, .form-field input, .form-field select, .form-field textarea, .category-card, .price-card, .faq-item, .checklist-item, .hv-card'
+      '.submit-cta, .form-field input, .form-field select, .form-field textarea, .category-card, .price-card, .faq-item, .checklist-item'
     ).forEach(el => {
       el.addEventListener('mouseenter', () => gsap.to(cursorDot, { scale: 3.2, duration: 0.25, ease: 'power2.out' }));
       el.addEventListener('mouseleave', () => gsap.to(cursorDot, { scale: 1, duration: 0.3, ease: 'power2.out' }));
@@ -121,52 +121,7 @@ if (window.gsap && window.ScrollTrigger) {
       })
         .to(heroGhost, { scale: 1.25, y: 40, opacity: 0.35, ease: 'none' }, 0)
         .to('.hero-copy', { opacity: 0, y: -60, ease: 'none' }, 0)
-        .to('.hero-visual', { opacity: 0, y: -40, scale: 0.94, ease: 'none' }, 0)
         .to('.category-marquee', { opacity: 0, ease: 'none' }, 0);
-    }
-
-    /* Mouse parallax + a subtle 3D tilt on the floating hero cards as a group.
-       quickTo pre-builds one reusable tween per property instead of creating a new
-       tween on every mousemove — the same effect for a fraction of the CPU cost. */
-    const heroVisual = document.querySelector('.hero-visual');
-    if (heroVisual) {
-      gsap.set(heroVisual, { transformPerspective: 1000 });
-      const parallaxSetters = Array.from(heroVisual.querySelectorAll('[data-parallax]')).map(el => ({
-        setX: gsap.quickTo(el, 'x', { duration: 0.6, ease: 'power2.out' }),
-        setY: gsap.quickTo(el, 'y', { duration: 0.6, ease: 'power2.out' }),
-        speed: parseFloat(el.dataset.parallax) * 60,
-      }));
-      const setTiltX = gsap.quickTo(heroVisual, 'rotateX', { duration: 0.6, ease: 'power2.out' });
-      const setTiltY = gsap.quickTo(heroVisual, 'rotateY', { duration: 0.6, ease: 'power2.out' });
-
-      heroVisual.addEventListener('mousemove', e => {
-        const rect = heroVisual.getBoundingClientRect();
-        const relX = (e.clientX - rect.left - rect.width / 2) / rect.width;
-        const relY = (e.clientY - rect.top - rect.height / 2) / rect.height;
-        parallaxSetters.forEach(p => { p.setX(relX * p.speed); p.setY(relY * p.speed); });
-        setTiltY(relX * 8);
-        setTiltX(-relY * 8);
-      });
-      heroVisual.addEventListener('mouseleave', () => {
-        parallaxSetters.forEach(p => { p.setX(0); p.setY(0); });
-        setTiltX(0);
-        setTiltY(0);
-      });
-    }
-
-    /* Ambient glow that trails the cursor around the hero */
-    const heroGlow = document.getElementById('heroGlow');
-    const heroSectionEl = document.querySelector('.hero');
-    if (heroGlow && heroSectionEl) {
-      const glowX = gsap.quickTo(heroGlow, 'x', { duration: 0.9, ease: 'power2.out' });
-      const glowY = gsap.quickTo(heroGlow, 'y', { duration: 0.9, ease: 'power2.out' });
-      heroSectionEl.addEventListener('mousemove', e => {
-        const rect = heroSectionEl.getBoundingClientRect();
-        glowX(e.clientX - rect.left);
-        glowY(e.clientY - rect.top);
-        heroGlow.classList.add('is-visible');
-      });
-      heroSectionEl.addEventListener('mouseleave', () => heroGlow.classList.remove('is-visible'));
     }
 
     /* Headline unmasks in a clean clip-path wipe, timed to the curtain lifting */
