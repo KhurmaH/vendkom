@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vendkom — Book vetted vendors for your next event</title>
 <meta name="description" content="Vendkom connects event organizers with vetted startup vendors — food & beverage, photography, and more. We handle the logistics and the marketing.">
-<meta name="theme-color" content="#fbf8f2">
+<meta name="theme-color" content="#0b0a09">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://vendkom.com/">
 <meta property="og:title" content="Vendkom — Book vetted vendors for your next event">
@@ -31,10 +31,10 @@
 
 <a class="skip-link" href="#main">Skip to content</a>
 
-<!-- Curtain intro: draws the mark, counts to 100, then iris-wipes away. Always resolves —
+<!-- Curtain intro: draws the mark, counts to 100, then irises away. Always resolves —
      script.js has a hard timeout fallback so this can never trap a visitor on a slow load. -->
 <div class="preloader" id="preloader" aria-hidden="true">
-  <svg class="preloader-mark" viewBox="0 0 100 100" width="64" height="64">
+  <svg class="preloader-mark" viewBox="0 0 100 100" width="70" height="70">
     <path d="M20 22 L50 78 L80 22" pathLength="1"></path>
   </svg>
   <div class="preloader-count" id="preloaderCount">0%</div>
@@ -43,8 +43,8 @@
 <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
 
 <!-- The only fixed chrome: a scroll-progress bar, a brand mark that jumps back to the top,
-     and a passive chapter-position indicator. Almost nothing else on this page is a nav
-     link or a button — the only other real clicks are the two form submits at the bottom. -->
+     and a passive chapter-position indicator. The only real clicks on this page are the
+     two form submits at the bottom and the footer's legal links. -->
 <div class="scroll-progress" aria-hidden="true"><div class="scroll-progress-fill" id="scrollProgressFill"></div></div>
 
 <a class="brand-mark" href="#top" title="Back to top">
@@ -67,18 +67,14 @@
 
   <!-- ============ HERO ============ -->
   <section class="hero" id="top">
-    <div class="hero-visual-wrap" aria-hidden="true">
-      <div class="hero-visual-bg" id="heroVisualBg"></div>
-      <img class="hero-visual-fg" id="heroVisualFg" src="assets/images/hero-booth-cutout.webp" alt="">
-    </div>
-    <div class="hero-scrim" aria-hidden="true"></div>
+    <div class="hero-halo" aria-hidden="true"></div>
+    <img class="hero-object" id="heroObject" src="assets/images/hero-booth-cutout.webp" alt="" aria-hidden="true">
     <span class="hero-ghost" aria-hidden="true">VENDKOM</span>
-    <div class="chapter-flash" id="heroFlash" aria-hidden="true"></div>
 
     <div class="container hero-inner">
       <div class="hero-copy">
         <p class="eyebrow">Now onboarding founding vendors</p>
-        <h1>Book standout local vendors, without the chaos.</h1>
+        <h1>Book standout local vendors, <em>without the chaos.</em></h1>
         <p class="hero-sub">
           Vendkom connects event organizers with vetted startup vendors — caterers, bartenders,
           photographers, and more — for events of every size. We handle the logistics on both sides
@@ -103,8 +99,8 @@
     </div>
   </section>
 
-  <!-- ============ HOW IT WORKS — two lanes, no tabs ============ -->
-  <section class="chapter chapter-theme-paper chapter-cut" id="how-it-works">
+  <!-- ============ 01 — HOW IT WORKS ============ -->
+  <section class="chapter" id="how-it-works">
     <span class="chapter-num-bg" aria-hidden="true">01</span>
     <div class="container">
       <div class="chapter-head">
@@ -155,8 +151,8 @@
     </div>
   </section>
 
-  <!-- ============ CATEGORIES — horizontal filmstrip ============ -->
-  <section class="chapter chapter-theme-lime chapter-cut" id="categories">
+  <!-- ============ 02 — CATEGORIES (pinned horizontal filmstrip) ============ -->
+  <section class="chapter" id="categories">
     <span class="chapter-num-bg" aria-hidden="true">02</span>
     <div class="container">
       <div class="chapter-head">
@@ -200,8 +196,8 @@
     </div>
   </section>
 
-  <!-- ============ VENDORS — directory of real listings ============ -->
-  <section class="chapter chapter-theme-paper chapter-cut" id="vendors">
+  <!-- ============ 03 — VENDORS ============ -->
+  <section class="chapter" id="vendors">
     <span class="chapter-num-bg" aria-hidden="true">03</span>
     <div class="container">
       <div class="chapter-head">
@@ -266,13 +262,12 @@
             <span class="vendor-price">From 600 JD</span>
           </div>
         </div>
-
       </div>
     </div>
   </section>
 
-  <!-- ============ FOR VENDORS — scrubbed checklist ============ -->
-  <section class="chapter chapter-theme-cobalt chapter-cut" id="for-vendors">
+  <!-- ============ 04 — FOR VENDORS ============ -->
+  <section class="chapter" id="for-vendors">
     <span class="chapter-num-bg" aria-hidden="true">04</span>
     <div class="container">
       <div class="chapter-head">
@@ -331,22 +326,22 @@
     </div>
   </section>
 
-  <section class="chapter chapter-theme-paper chapter-cut" style="padding-top: 90px; padding-bottom: 90px;">
-    <span class="chapter-num-bg" aria-hidden="true">＋</span>
+  <!-- ============ CATEGORIES WE SUPPORT ============ -->
+  <section class="chapter" style="padding: 90px 0;">
     <div class="container">
-      <p class="chapter-index" style="margin-bottom: 24px;">Categories we support</p>
+      <p class="chapter-index" style="margin-bottom: 26px;">Categories we support</p>
       <p class="tag-ticker">
         <span>Catering</span><span>Food &amp; Beverages</span><span>Photography</span><span>Videography</span>
       </p>
     </div>
   </section>
 
-  <!-- ============ PRICING — scrubbed price tick, no toggle ============ -->
-  <section class="chapter chapter-theme-paper chapter-cut" id="pricing">
+  <!-- ============ 05 — PRICING ============ -->
+  <section class="chapter" id="pricing">
     <span class="chapter-num-bg" aria-hidden="true">05</span>
     <div class="container">
       <div class="chapter-head centered">
-        <p class="chapter-index" style="justify-content:center;">05 — Pricing</p>
+        <p class="chapter-index">05 — Pricing</p>
         <h2>Plans that grow with your business</h2>
         <p>Organizers always use Vendkom for free. Watch each price settle into its annual rate as you scroll.</p>
       </div>
@@ -400,8 +395,8 @@
     </div>
   </section>
 
-  <!-- ============ FAQ — auto-reveals, no click ============ -->
-  <section class="chapter chapter-theme-paper chapter-cut" id="faq">
+  <!-- ============ 06 — FAQ ============ -->
+  <section class="chapter" id="faq">
     <span class="chapter-num-bg" aria-hidden="true">06</span>
     <div class="container container-narrow">
       <div class="chapter-head">
@@ -446,13 +441,15 @@
     </div>
   </section>
 
-  <!-- ============ GET STARTED — organizer + vendor stacked, no tabs ============ -->
-  <section class="chapter chapter-theme-coral chapter-cut" id="get-started">
-    <div class="chapter-flash" id="gsFlash" aria-hidden="true"></div>
+  <!-- ============ 07 — GET STARTED ============ -->
+  <section class="chapter has-backdrop" id="get-started" style="border-bottom: none;">
+    <div class="gs-backdrop" aria-hidden="true">
+      <img id="gsBackdropImg" src="assets/images/hero-champagne.jpg" alt="" loading="lazy">
+    </div>
     <span class="chapter-num-bg" aria-hidden="true">07</span>
     <div class="container">
       <div class="chapter-head centered">
-        <p class="chapter-index" style="justify-content:center;">07 — Get started</p>
+        <p class="chapter-index">07 — Get started</p>
         <h2>Tell us who you are, we'll take it from there</h2>
         <p>Founding vendors and early organizers get priority onboarding as we launch.</p>
       </div>

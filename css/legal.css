@@ -2,16 +2,18 @@
    Vendkom — legal document pages
    Plain, readable, printable. No animation, no scroll tricks — this is the
    one place on the site where getting out of the reader's way matters more
-   than the brand's kinetic personality.
+   than the brand's personality. Shares the main site's dark palette so the
+   pages don't feel like a different product, but with a longer measure and
+   looser leading for sustained reading.
    ========================================================================== */
 :root {
-  --ink: #1c1712;
-  --paper: #fbf8f2;
-  --paper-line: rgba(28, 23, 18, 0.12);
-  --paper-muted: #7d7261;
-  --lime: #c8a662;
-  --coral: #eea638;
-  --coral-dark: #9b6513;
+  --ink: #0b0a09;
+  --ink-2: #131110;
+  --bone: #f2ede4;
+  --bone-mute: rgba(242, 237, 228, 0.78);
+  --bone-faint: rgba(242, 237, 228, 0.42);
+  --line: rgba(242, 237, 228, 0.12);
+  --gold: #c8a662;
   --font-display: 'Archivo', 'Inter', -apple-system, sans-serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -19,15 +21,16 @@
 * { box-sizing: border-box; }
 body {
   margin: 0;
-  background: var(--paper);
-  color: var(--ink);
+  background: var(--ink);
+  color: var(--bone);
   font-family: var(--font-body);
-  line-height: 1.7;
+  line-height: 1.75;
   font-size: 1.02rem;
+  -webkit-font-smoothing: antialiased;
 }
 .legal-header {
-  border-bottom: 1px solid var(--paper-line);
-  padding: 22px 0;
+  border-bottom: 1px solid var(--line);
+  padding: 24px 0;
 }
 .legal-header .inner {
   max-width: 760px;
@@ -35,93 +38,100 @@ body {
   padding: 0 24px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 11px;
 }
 .legal-header .mark {
-  width: 28px; height: 28px;
-  border-radius: 7px;
-  background: var(--lime);
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  background: var(--gold);
   color: var(--ink);
   display: inline-flex; align-items: center; justify-content: center;
-  font-family: var(--font-display); font-weight: 800; font-size: 0.95rem;
+  font-family: var(--font-display); font-weight: 900; font-size: 0.95rem;
 }
 .legal-header a {
-  color: var(--ink);
+  color: var(--bone);
   text-decoration: none;
   font-family: var(--font-display);
   font-weight: 800;
   text-transform: uppercase;
-  font-size: 1rem;
-  letter-spacing: 0.01em;
+  font-size: 0.95rem;
+  letter-spacing: 0.12em;
 }
 main.legal {
   max-width: 760px;
   margin: 0 auto;
-  padding: 56px 24px 100px;
+  padding: 64px 24px 110px;
 }
 .legal .eyebrow {
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--coral-dark);
-  margin-bottom: 14px;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+  margin-bottom: 16px;
   display: block;
 }
 main.legal h1 {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 4.5vw, 2.8rem);
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: -0.01em;
-  margin: 0 0 8px;
+  font-size: clamp(2rem, 4.5vw, 2.9rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  margin: 0 0 10px;
   line-height: 1.05;
 }
 .legal .updated {
   font-family: var(--font-mono);
-  font-size: 0.82rem;
-  color: var(--paper-muted);
-  margin-bottom: 40px;
+  font-size: 0.8rem;
+  color: var(--bone-faint);
+  margin-bottom: 44px;
 }
 main.legal h2 {
   font-family: var(--font-display);
   font-size: 1.35rem;
   font-weight: 800;
-  margin: 2.4em 0 0.6em;
-  padding-top: 0.4em;
-  border-top: 1px solid var(--paper-line);
+  letter-spacing: -0.02em;
+  margin: 2.6em 0 0.6em;
+  padding-top: 0.5em;
+  border-top: 1px solid var(--line);
 }
 main.legal h2:first-of-type { border-top: none; padding-top: 0; }
 main.legal h3 {
   font-family: var(--font-display);
   font-size: 1.05rem;
   font-weight: 700;
-  margin: 1.6em 0 0.4em;
+  margin: 1.7em 0 0.4em;
 }
-main.legal p { margin: 0 0 1.1em; color: rgba(28, 23, 18, 0.85); }
-main.legal ul, main.legal ol { margin: 0 0 1.1em; padding-left: 1.4em; }
-main.legal li { margin-bottom: 0.5em; color: rgba(28, 23, 18, 0.85); }
-main.legal strong { font-weight: 700; }
-main.legal a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--paper-line); text-underline-offset: 2px; }
-main.legal a:hover { text-decoration-color: var(--ink); }
+main.legal p { margin: 0 0 1.15em; color: var(--bone-mute); }
+main.legal ul, main.legal ol { margin: 0 0 1.15em; padding-left: 1.4em; }
+main.legal li { margin-bottom: 0.55em; color: var(--bone-mute); }
+main.legal strong { font-weight: 700; color: var(--bone); }
+main.legal a {
+  color: var(--bone);
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-underline-offset: 3px;
+}
+main.legal a:hover { color: var(--gold); text-decoration-color: var(--gold); }
 .legal-note {
-  background: rgba(230, 69, 98, 0.08);
-  border: 1px solid rgba(230, 69, 98, 0.25);
-  border-radius: 10px;
-  padding: 16px 20px;
+  background: rgba(200, 166, 98, 0.07);
+  border: 1px solid rgba(200, 166, 98, 0.22);
+  border-radius: 4px;
+  padding: 18px 22px;
   font-size: 0.92rem;
-  margin: 0 0 2em;
+  margin: 0 0 2.2em;
 }
-.legal-note strong { color: var(--coral-dark); }
+.legal-note strong { color: var(--gold); }
 .legal-footer {
-  border-top: 1px solid var(--paper-line);
-  margin-top: 3em;
-  padding-top: 1.6em;
+  border-top: 1px solid var(--line);
+  margin-top: 3.2em;
+  padding-top: 1.7em;
   font-family: var(--font-mono);
-  font-size: 0.82rem;
-  color: var(--paper-muted);
+  font-size: 0.8rem;
+  color: var(--bone-faint);
 }
 @media print {
   .legal-header { display: none; }
-  body { background: #fff; }
+  body { background: #fff; color: #111; }
+  main.legal p, main.legal li { color: #222; }
+  main.legal a { color: #111; }
 }

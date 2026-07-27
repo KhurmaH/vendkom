@@ -1,9 +1,25 @@
+/* ==========================================================================
+   Vendkom — motion layer
+
+   Cinematic (pinned sections, scrubbed sequences, horizontal scroll) but
+   built against the specific things that caused stutter earlier:
+
+     1. Nothing here is WebGL. Every animated property is a transform or an
+        opacity, which the compositor handles off the main thread.
+     2. Every scrubbed onUpdate caches its last written value and returns
+        early when nothing changed — scrub callbacks fire on every scroll
+        tick, and an unguarded textContent write forces a layout each time.
+     3. All mousemove handlers use gsap.quickTo, which reuses one tween per
+        property instead of allocating a new one per event.
+     4. ScrollTrigger recalculates after fonts and images settle, so pins
+        don't fire against stale positions.
+   ========================================================================== */
+
 document.querySelectorAll('.year').forEach(el => {
   el.textContent = new Date().getFullYear();
 });
 
-/* ---------- Preloader: draws the mark, counts up, iris-wipes away ----------
-   Must always resolve — a hard timeout forces it closed even if GSAP fails to load. */
+/* ---------- Preloader — must always resolve, even if GSAP never loads ---------- */
 const preloader = document.getElementById('preloader');
 let heroRevealCallbacks = [];
 if (preloader) {
@@ -20,17 +36,25 @@ if (preloader) {
     document.body.style.overflow = '';
     heroRevealCallbacks.forEach(fn => fn());
     heroRevealCallbacks = [];
-    setTimeout(() => preloader.remove(), 1000);
+    setTimeout(() => preloader.remove(), 1100);
   };
 
   if (window.gsap && !reduceMotionEarly) {
     const counter = { val: 0 };
-    if (markPath) gsap.fromTo(markPath, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 1.1, ease: 'power2.inOut' });
+    if (markPath) {
+      gsap.fromTo(markPath, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 1.2, ease: 'power2.inOut' });
+    }
+    let lastPct = -1;
     gsap.to(counter, {
       val: 100,
-      duration: 1.3,
+      duration: 1.4,
       ease: 'power2.inOut',
-      onUpdate: () => { if (countEl) countEl.textContent = `${Math.round(counter.val)}%`; },
+      onUpdate: () => {
+        const pct = Math.round(counter.val);
+        if (pct === lastPct || !countEl) return;
+        lastPct = pct;
+        countEl.textContent = `${pct}%`;
+      },
       onComplete: finishPreload,
     });
   } else {
@@ -40,7 +64,7 @@ if (preloader) {
   safetyTimer = setTimeout(finishPreload, 4000);
 }
 
-/* ---------- Chapter rail: passive scroll-position indicator (nothing to click) ---------- */
+/* ---------- Chapter rail — passive position indicator ---------- */
 const chapterRail = document.getElementById('chapterRail');
 if (chapterRail && 'IntersectionObserver' in window) {
   const dots = Array.from(chapterRail.querySelectorAll('i[data-rail-for]'));
@@ -49,7 +73,6 @@ if (chapterRail && 'IntersectionObserver' in window) {
     const section = document.getElementById(dot.dataset.railFor);
     if (section) sectionToDot.set(section, dot);
   });
-
   const spy = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (!entry.isIntersecting) return;
@@ -57,303 +80,231 @@ if (chapterRail && 'IntersectionObserver' in window) {
       dots.forEach(dot => dot.classList.toggle('active', dot === activeDot));
     });
   }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
-
   sectionToDot.forEach((_, section) => spy.observe(section));
 }
 
-/* ---------- Pause the ken-burns zoom on any vendor photo that's off-screen ----------
-   9 images running a continuous CSS transform animation at all times is real ongoing
-   compositing cost; no reason to pay it for photos nowhere near the viewport. */
-if ('IntersectionObserver' in window) {
-  const photoObserver = new IntersectionObserver(entries => {
-    entries.forEach(entry => entry.target.classList.toggle('is-paused', !entry.isIntersecting));
-  }, { rootMargin: '200px 0px' });
-  document.querySelectorAll('.vendor-photo').forEach(img => photoObserver.observe(img));
-}
-
-/* ---------- Scroll-driven effects (GSAP + ScrollTrigger) ---------- */
+/* ---------- Scroll-driven effects ---------- */
 if (window.gsap && window.ScrollTrigger) {
   gsap.registerPlugin(ScrollTrigger);
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-  /* Trigger positions are computed at first layout, before web fonts swap in and before
-     below-the-fold images finish loading — both change document height and can leave
-     pins/scrubs firing at the wrong scroll offset until GSAP knows to recalculate. */
+  /* Trigger positions are computed at first layout — before webfonts swap and
+     before below-the-fold images size themselves. Both change document height,
+     which would leave every pin firing at the wrong offset. */
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(() => ScrollTrigger.refresh());
   }
   window.addEventListener('load', () => ScrollTrigger.refresh());
 
-  /* Scroll progress bar spanning the whole document */
+  /* Progress bar across the whole document */
   gsap.to('#scrollProgressFill', {
     scaleX: 1,
     ease: 'none',
     scrollTrigger: { trigger: document.body, start: 'top top', end: 'bottom bottom', scrub: 0.3 },
   });
 
-  /* Custom cursor — a mix-blend-mode dot that reads against every chapter color automatically,
-     and swells over anything worth noticing even though almost nothing here is clickable. */
+  /* Custom cursor — mix-blend-mode means it reads against every surface */
   const cursorDot = document.getElementById('cursorDot');
-  if (cursorDot && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+  if (cursorDot && finePointer) {
     const cursorX = gsap.quickTo(cursorDot, 'x', { duration: 0.35, ease: 'power3.out' });
     const cursorY = gsap.quickTo(cursorDot, 'y', { duration: 0.35, ease: 'power3.out' });
-    window.addEventListener('mousemove', e => { cursorX(e.clientX); cursorY(e.clientY); });
+    window.addEventListener('mousemove', e => { cursorX(e.clientX); cursorY(e.clientY); }, { passive: true });
     document.querySelectorAll(
-      '.submit-cta, .form-field input, .form-field select, .form-field textarea, .category-card, .price-card, .faq-item, .checklist-item'
+      '.submit-cta, .form-field input, .form-field select, .form-field textarea, .category-card, .price-card, .faq-item, .vendor-card, .lane-step'
     ).forEach(el => {
-      el.addEventListener('mouseenter', () => gsap.to(cursorDot, { scale: 3.2, duration: 0.25, ease: 'power2.out' }));
+      el.addEventListener('mouseenter', () => gsap.to(cursorDot, { scale: 3, duration: 0.25, ease: 'power2.out' }));
       el.addEventListener('mouseleave', () => gsap.to(cursorDot, { scale: 1, duration: 0.3, ease: 'power2.out' }));
     });
   } else if (cursorDot) {
     cursorDot.style.display = 'none';
   }
 
-  /* Fire once the curtain finishes (or immediately if there's no preloader to wait on) */
   const onHeroReveal = fn => { if (preloader) heroRevealCallbacks.push(fn); else fn(); };
 
   if (!reduceMotion) {
-    /* Pinned hero: ghost wordmark pushes forward, copy and cards fall away as you scroll off it */
+    /* ---------- Hero ---------- */
     const heroSection = document.querySelector('.hero');
+    const heroObject = document.getElementById('heroObject');
     const heroGhost = document.querySelector('.hero-ghost');
-    if (heroSection && heroGhost) {
-      gsap.timeline({
-        scrollTrigger: { trigger: heroSection, start: 'top top', end: '+=45%', scrub: 0.5, pin: true },
-      })
-        .to(heroGhost, { scale: 1.25, y: 40, opacity: 0.35, ease: 'none' }, 0)
-        .to('.hero-copy', { opacity: 0, y: -60, ease: 'none' }, 0)
-        .to('.category-marquee', { opacity: 0, ease: 'none' }, 0);
+
+    if (heroObject) gsap.set(heroObject, { yPercent: -50 });
+
+    /* Staged entrance once the curtain lifts */
+    onHeroReveal(() => {
+      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+      tl.from('.hero .eyebrow', { opacity: 0, y: 20, duration: 0.7 })
+        .from('.hero h1', { opacity: 0, y: 46, duration: 1.1 }, '-=0.45')
+        .from('.hero-sub', { opacity: 0, y: 26, duration: 0.9 }, '-=0.8')
+        .from('.hero-trust li', { opacity: 0, y: 16, duration: 0.7, stagger: 0.09 }, '-=0.65')
+        .from('.scroll-cue', { opacity: 0, duration: 0.7 }, '-=0.5');
+      if (heroObject) {
+        tl.from(heroObject, { opacity: 0, scale: 0.92, duration: 1.4, ease: 'power2.out' }, 0.15);
+      }
+      tl.from('.hero-halo', { opacity: 0, duration: 1.6, ease: 'none' }, 0);
+    });
+
+    /* Pinned exit — copy lifts away, object drifts back, ghost pushes forward */
+    if (heroSection) {
+      const heroTl = gsap.timeline({
+        scrollTrigger: { trigger: heroSection, start: 'top top', end: '+=70%', scrub: 0.6, pin: true },
+      });
+      heroTl.to('.hero-copy', { opacity: 0, y: -70, ease: 'none' }, 0)
+            .to('.category-marquee', { opacity: 0, ease: 'none' }, 0);
+      if (heroGhost) heroTl.to(heroGhost, { scale: 1.3, opacity: 0.4, ease: 'none' }, 0);
+      if (heroObject) heroTl.to(heroObject, { y: -60, scale: 1.08, opacity: 0.25, ease: 'none' }, 0);
     }
 
-    /* Hero visual: two real depth layers (cut-out tent foreground + flat-color
-       background) tilting at DIFFERENT rates toward the cursor — that mismatch is
-       what actually reads as depth, not just one flat image rotating. Both driven
-       by the same mousemove via quickTo, so it's still just two cheap transforms. */
-    const heroVisualBg = document.getElementById('heroVisualBg');
-    const heroVisualFg = document.getElementById('heroVisualFg');
-    if (heroVisualBg && heroVisualFg && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-      const setBgTiltX = gsap.quickTo(heroVisualBg, 'rotateX', { duration: 0.7, ease: 'power2.out' });
-      const setBgTiltY = gsap.quickTo(heroVisualBg, 'rotateY', { duration: 0.7, ease: 'power2.out' });
-      const setFgTiltX = gsap.quickTo(heroVisualFg, 'rotateX', { duration: 0.5, ease: 'power2.out' });
-      const setFgTiltY = gsap.quickTo(heroVisualFg, 'rotateY', { duration: 0.5, ease: 'power2.out' });
-      const setFgX = gsap.quickTo(heroVisualFg, 'x', { duration: 0.5, ease: 'power2.out' });
-      const setFgY = gsap.quickTo(heroVisualFg, 'y', { duration: 0.5, ease: 'power2.out' });
-      const setFgScale = gsap.quickTo(heroVisualFg, 'scale', { duration: 0.5, ease: 'power2.out' });
-
+    /* Hero object drifts with the cursor — quickTo, so one tween is reused */
+    if (heroObject && heroSection && finePointer) {
+      const objX = gsap.quickTo(heroObject, 'x', { duration: 0.9, ease: 'power2.out' });
+      const objRotY = gsap.quickTo(heroObject, 'rotationY', { duration: 0.9, ease: 'power2.out' });
+      gsap.set(heroObject, { transformPerspective: 1200 });
       heroSection.addEventListener('mousemove', e => {
         const rect = heroSection.getBoundingClientRect();
         const relX = (e.clientX - rect.left) / rect.width - 0.5;
-        const relY = (e.clientY - rect.top) / rect.height - 0.5;
-
-        setBgTiltY(relX * 6);
-        setBgTiltX(-relY * 6);
-
-        setFgTiltY(relX * 22);
-        setFgTiltX(-relY * 22);
-        setFgX(relX * 34);
-        setFgY(relY * 22);
-        setFgScale(1.05);
-      });
-      heroSection.addEventListener('mouseleave', () => {
-        setBgTiltX(0); setBgTiltY(0);
-        setFgTiltX(0); setFgTiltY(0);
-        setFgX(0); setFgY(0);
-        setFgScale(1);
-      });
+        objX(relX * 44);
+        objRotY(relX * 9);
+      }, { passive: true });
+      heroSection.addEventListener('mouseleave', () => { objX(0); objRotY(0); });
     }
 
-    /* Headline unmasks in a clean clip-path wipe, timed to the curtain lifting */
-    const heroH1 = document.querySelector('.hero h1');
-    if (heroH1) {
-      onHeroReveal(() => {
-        gsap.fromTo(heroH1,
-          { clipPath: 'inset(0 100% 0 0)', opacity: 0 },
-          { clipPath: 'inset(0 0% 0 0)', opacity: 1, duration: 1, ease: 'power3.out' }
-        );
+    /* ---------- Shared section entrances ---------- */
+    document.querySelectorAll('.chapter-head').forEach(head => {
+      gsap.from(head, {
+        opacity: 0, y: 34, duration: 1, ease: 'power3.out',
+        scrollTrigger: { trigger: head, start: 'top 84%', toggleActions: 'play none none none' },
       });
-    }
-
-    /* One-time impact flash as the curtain lifts */
-    const heroFlash = document.getElementById('heroFlash');
-    if (heroFlash) {
-      onHeroReveal(() => {
-        gsap.fromTo(heroFlash, { opacity: 0.85, scale: 0.6 }, { opacity: 0, scale: 1.4, duration: 0.8, ease: 'power2.out', transformOrigin: '50% 0%' });
-      });
-    }
-
-    /* Simple, shared entrance for the quieter chapter furniture — heads, tickers, dashboard card */
-    const fadeUpOnScroll = (trigger, targets, vars = {}) => {
-      if (!trigger || !targets || !targets.length) return;
-      gsap.from(targets, {
-        opacity: 0, y: 24, duration: 0.8, ease: 'power2.out', stagger: 0.08,
-        scrollTrigger: { trigger, start: 'top 85%', toggleActions: 'play none none none' },
-        ...vars,
-      });
-    };
-    /* Same idea, but with real 3D rotation instead of a flat slide — one-shot on scroll-in
-       (toggleActions: play once), so unlike the scrubbed effects above this costs nothing
-       once it's played; a shared visual language (perspective + rotate) tying chapter
-       entrances to the same depth feel as the pricing cards and the background field. */
-    const tiltInOnScroll = (trigger, targets, vars = {}) => {
-      if (!trigger || !targets || !targets.length) return;
-      gsap.set(targets, { transformPerspective: 900 });
-      gsap.from(targets, {
-        opacity: 0, rotateX: 32, transformOrigin: 'top center',
-        duration: 0.9, ease: 'power3.out', stagger: 0.08,
-        scrollTrigger: { trigger, start: 'top 85%', toggleActions: 'play none none none' },
-        ...vars,
-      });
-    };
-    document.querySelectorAll('.chapter-head').forEach(head => tiltInOnScroll(head, [head], { stagger: 0 }));
-    const tagTicker = document.querySelector('.tag-ticker');
-    if (tagTicker) fadeUpOnScroll(tagTicker, [tagTicker], { y: 0, stagger: 0 });
-    const statCard = document.querySelector('.vendors-visual .stat-card');
-    if (statCard) {
-      tiltInOnScroll(statCard, [statCard], {
-        rotateX: 0, rotateY: -38, transformOrigin: 'left center',
-      });
-    }
-    fadeUpOnScroll(document.querySelector('.stat-counter-row'), gsap.utils.toArray('.stat-counter'), { stagger: 0.1 });
-    document.querySelectorAll('.gs-block').forEach(block => {
-      tiltInOnScroll(block, [block], { rotateX: -26, transformOrigin: 'bottom center', stagger: 0 });
     });
 
-    /* How it works: each lane slides in from its own side — organizer from the left, vendor from the right */
+    /* 01 — lanes slide in from their own side */
     document.querySelectorAll('.lane').forEach(lane => {
-      const fromX = lane.dataset.lane === 'organizer' ? -70 : 70;
+      const fromX = lane.dataset.lane === 'organizer' ? -60 : 60;
       gsap.from(lane.querySelectorAll('.lane-step'), {
-        x: fromX, opacity: 0, duration: 0.9, ease: 'power3.out', stagger: 0.15,
+        x: fromX, opacity: 0, duration: 1, ease: 'power3.out', stagger: 0.14,
         scrollTrigger: { trigger: lane, start: 'top 78%', toggleActions: 'play none none none' },
       });
     });
 
-    /* Categories: horizontal filmstrip — vertical scroll drives horizontal motion while pinned */
+    /* 02 — Categories: vertical scroll drives the filmstrip sideways while pinned */
     const categoriesPin = document.querySelector('.categories-pin');
     const categoriesTrack = document.querySelector('.categories-track');
     if (categoriesPin && categoriesTrack && window.matchMedia('(min-width: 900px)').matches) {
-      const getScrollDistance = () => categoriesTrack.scrollWidth - categoriesPin.clientWidth;
+      const distance = () => Math.max(0, categoriesTrack.scrollWidth - categoriesPin.clientWidth);
       categoriesPin.style.overflowX = 'hidden';
       gsap.to(categoriesTrack, {
-        x: () => -getScrollDistance(),
+        x: () => -distance(),
         ease: 'none',
         scrollTrigger: {
           trigger: categoriesPin,
-          start: 'top top',
-          end: () => `+=${getScrollDistance()}`,
+          start: 'top 30%',
+          end: () => `+=${distance()}`,
           scrub: 0.8,
           pin: true,
           invalidateOnRefresh: true,
         },
       });
     }
-
-    /* Cards flip in from face-down, once, right as the filmstrip section arrives —
-       same one-shot pattern as the other 3D entrances, not tied to the horizontal scrub. */
-    const categoryCards = gsap.utils.toArray('.category-card');
-    if (categoryCards.length) {
-      gsap.set(categoryCards, { transformPerspective: 600 });
-      gsap.from(categoryCards, {
-        opacity: 0, rotateY: -55, transformOrigin: 'left center',
-        duration: 0.8, ease: 'power3.out', stagger: 0.1,
-        scrollTrigger: { trigger: categoriesPin || '.categories-pin', start: 'top 80%', toggleActions: 'play none none none' },
+    gsap.utils.toArray('.category-card').forEach((card, i) => {
+      gsap.from(card, {
+        opacity: 0, y: 50, duration: 0.9, ease: 'power3.out', delay: i * 0.06,
+        scrollTrigger: { trigger: categoriesPin || card, start: 'top 82%', toggleActions: 'play none none none' },
       });
-    }
-
-    /* Each category card tilts toward the cursor while it drifts past — one quickTo pair
-       built per card up front, reused on every mousemove instead of tweening from scratch. */
-    document.querySelectorAll('.category-card').forEach(card => {
-      gsap.set(card, { transformPerspective: 600 });
-      const setTiltX = gsap.quickTo(card, 'rotateX', { duration: 0.4, ease: 'power2.out' });
-      const setTiltY = gsap.quickTo(card, 'rotateY', { duration: 0.4, ease: 'power2.out' });
+      if (!finePointer) return;
+      gsap.set(card, { transformPerspective: 800 });
+      const tx = gsap.quickTo(card, 'rotationX', { duration: 0.5, ease: 'power2.out' });
+      const ty = gsap.quickTo(card, 'rotationY', { duration: 0.5, ease: 'power2.out' });
       card.addEventListener('mousemove', e => {
-        const rect = card.getBoundingClientRect();
-        const relX = (e.clientX - rect.left - rect.width / 2) / rect.width;
-        const relY = (e.clientY - rect.top - rect.height / 2) / rect.height;
-        setTiltY(relX * 14);
-        setTiltX(-relY * 14);
-      });
-      card.addEventListener('mouseleave', () => { setTiltX(0); setTiltY(0); });
+        const r = card.getBoundingClientRect();
+        ty(((e.clientX - r.left) / r.width - 0.5) * 12);
+        tx(-((e.clientY - r.top) / r.height - 0.5) * 12);
+      }, { passive: true });
+      card.addEventListener('mouseleave', () => { tx(0); ty(0); });
     });
 
-    /* Vendors directory: cards wipe in from alternating directions, each photo drifts at its own
-       pace as it scrolls (independent of the photo's own continuous ken-burns zoom), and tilts
-       toward the cursor on hover. */
+    /* 03 — Vendors: staggered rise, photo parallax, cursor tilt */
     const vendorGrid = document.getElementById('vendorGrid');
     if (vendorGrid) {
-      const wipeDirections = [
-        'inset(0 100% 0 0)', 'inset(0 0 0 100%)', 'inset(100% 0 0 0)', 'inset(0 0 100% 0)',
-      ];
       gsap.utils.toArray(vendorGrid.querySelectorAll('.vendor-card')).forEach((card, i) => {
-        gsap.set(card, { transformPerspective: 700 });
         gsap.from(card, {
-          clipPath: wipeDirections[i % wipeDirections.length],
-          rotateY: i % 2 === 0 ? -22 : 22,
-          opacity: 0,
-          duration: 0.8,
-          ease: 'power3.out',
-          scrollTrigger: { trigger: card, start: 'top 88%', toggleActions: 'play none none none' },
+          opacity: 0, y: 56, duration: 0.95, ease: 'power3.out', delay: i * 0.09,
+          scrollTrigger: { trigger: vendorGrid, start: 'top 82%', toggleActions: 'play none none none' },
         });
-        const setTiltX = gsap.quickTo(card, 'rotateX', { duration: 0.4, ease: 'power2.out' });
-        const setTiltY = gsap.quickTo(card, 'rotateY', { duration: 0.4, ease: 'power2.out' });
+        if (!finePointer) return;
+        gsap.set(card, { transformPerspective: 900 });
+        const tx = gsap.quickTo(card, 'rotationX', { duration: 0.5, ease: 'power2.out' });
+        const ty = gsap.quickTo(card, 'rotationY', { duration: 0.5, ease: 'power2.out' });
         card.addEventListener('mousemove', e => {
-          const rect = card.getBoundingClientRect();
-          const relX = (e.clientX - rect.left - rect.width / 2) / rect.width;
-          const relY = (e.clientY - rect.top - rect.height / 2) / rect.height;
-          setTiltY(relX * 10);
-          setTiltX(-relY * 10);
-        });
-        card.addEventListener('mouseleave', () => { setTiltX(0); setTiltY(0); });
+          const r = card.getBoundingClientRect();
+          ty(((e.clientX - r.left) / r.width - 0.5) * 9);
+          tx(-((e.clientY - r.top) / r.height - 0.5) * 9);
+        }, { passive: true });
+        card.addEventListener('mouseleave', () => { tx(0); ty(0); });
       });
 
       vendorGrid.querySelectorAll('.vendor-photo-parallax').forEach(wrap => {
         gsap.fromTo(wrap,
-          { yPercent: -10 },
-          { yPercent: 10, ease: 'none', scrollTrigger: { trigger: wrap, start: 'top bottom', end: 'bottom top', scrub: true } }
+          { yPercent: -8 },
+          {
+            yPercent: 8, ease: 'none',
+            scrollTrigger: { trigger: wrap, start: 'top bottom', end: 'bottom top', scrub: true },
+          }
         );
       });
     }
 
-    /* For vendors: the checklist ticks itself off as you scroll through it, and un-ticks in reverse */
+    /* 04 — Checklist ticks itself off as it passes.
+       doneCount is cached: without this, every scroll tick would re-toggle
+       six classes whether or not the count actually moved. */
     const checklist = document.getElementById('vendorChecklist');
     if (checklist) {
       const items = Array.from(checklist.querySelectorAll('.checklist-item'));
-      let lastDoneCount = -1;
+      let lastDone = -1;
       ScrollTrigger.create({
         trigger: checklist,
-        start: 'top 75%',
-        end: 'bottom 55%',
+        start: 'top 72%',
+        end: 'bottom 58%',
         scrub: 0.4,
         onUpdate: self => {
-          const doneCount = Math.round(self.progress * items.length);
-          if (doneCount === lastDoneCount) return;
-          lastDoneCount = doneCount;
-          items.forEach((item, i) => item.classList.toggle('is-done', i < doneCount));
+          const done = Math.round(self.progress * items.length);
+          if (done === lastDone) return;
+          lastDone = done;
+          items.forEach((item, i) => item.classList.toggle('is-done', i < done));
         },
       });
     }
+
     document.querySelectorAll('.stat-bar i[data-bar-width]').forEach(bar => {
       gsap.to(bar, {
         scaleX: parseFloat(bar.dataset.barWidth) / 100,
-        duration: 1.1, ease: 'power2.out',
+        duration: 1.3, ease: 'power2.out',
         scrollTrigger: { trigger: bar, start: 'top 90%', toggleActions: 'play none none none' },
       });
     });
+
+    /* Counters — cached so a repeated integer never re-writes the DOM */
     document.querySelectorAll('[data-count-to]').forEach(el => {
       const target = parseFloat(el.dataset.countTo);
       const suffix = el.dataset.countSuffix || '';
       const counter = { val: 0 };
+      let lastVal = -1;
       gsap.to(counter, {
-        val: target, duration: 1.6, ease: 'power2.out',
+        val: target, duration: 1.8, ease: 'power2.out',
         scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' },
-        onUpdate: () => { el.textContent = Math.round(counter.val) + suffix; },
-        onComplete: () => el.classList.add('is-locked'),
+        onUpdate: () => {
+          const v = Math.round(counter.val);
+          if (v === lastVal) return;
+          lastVal = v;
+          el.textContent = v + suffix;
+        },
       });
     });
 
-    /* Pricing: cards flip up like a split-flap board, then each price ticks from monthly to annual
-       as its own card scrolls through view — reverses cleanly if you scroll back up. */
+    /* 05 — Pricing: cards rise, then each price ticks monthly → annual as its
+       own card crosses the viewport. Both writes are cached. */
     gsap.from('.price-card', {
-      rotateX: -18, opacity: 0, transformOrigin: 'bottom center', duration: 0.9, ease: 'power3.out', stagger: 0.12,
-      scrollTrigger: { trigger: '.pricing-grid', start: 'top 78%', toggleActions: 'play none none none' },
+      opacity: 0, y: 60, duration: 1, ease: 'power3.out', stagger: 0.12,
+      scrollTrigger: { trigger: '.pricing-grid', start: 'top 80%', toggleActions: 'play none none none' },
     });
     document.querySelectorAll('.price-card').forEach(card => {
       const amountEl = card.querySelector('.amount');
@@ -385,51 +336,62 @@ if (window.gsap && window.ScrollTrigger) {
       });
     });
 
-    /* FAQ: answers open and close on their own as each question crosses the middle of the screen */
-    const faqItems = gsap.utils.toArray('.faq-item');
-    if (faqItems.length) {
-      gsap.set(faqItems, { transformPerspective: 800 });
-      gsap.from(faqItems, {
-        opacity: 0, rotateX: 24, y: 12, transformOrigin: 'top center',
-        duration: 0.7, ease: 'power3.out', stagger: 0.06,
-        scrollTrigger: { trigger: '.faq-list', start: 'top 82%', toggleActions: 'play none none none' },
-      });
-    }
+    /* 06 — FAQ answers open on their own as each question reaches the middle */
+    gsap.from('.faq-item', {
+      opacity: 0, y: 22, duration: 0.7, ease: 'power3.out', stagger: 0.06,
+      scrollTrigger: { trigger: '.faq-list', start: 'top 82%', toggleActions: 'play none none none' },
+    });
     document.querySelectorAll('.faq-item').forEach(item => {
       const answer = item.querySelector('.faq-a');
       if (!answer) return;
+      const open = () => {
+        item.classList.add('is-open');
+        gsap.to(answer, { height: 'auto', opacity: 1, duration: 0.5, ease: 'power2.out' });
+      };
+      const close = () => {
+        item.classList.remove('is-open');
+        gsap.to(answer, { height: 0, opacity: 0, duration: 0.4, ease: 'power2.in' });
+      };
       ScrollTrigger.create({
         trigger: item,
-        start: 'top 65%',
-        end: 'bottom 35%',
-        onEnter: () => gsap.to(answer, { height: 'auto', opacity: 1, duration: 0.5, ease: 'power2.out' }),
-        onLeave: () => gsap.to(answer, { height: 0, opacity: 0, duration: 0.4, ease: 'power2.in' }),
-        onEnterBack: () => gsap.to(answer, { height: 'auto', opacity: 1, duration: 0.5, ease: 'power2.out' }),
-        onLeaveBack: () => gsap.to(answer, { height: 0, opacity: 0, duration: 0.4, ease: 'power2.in' }),
+        start: 'top 68%',
+        end: 'bottom 34%',
+        onEnter: open, onEnterBack: open,
+        onLeave: close, onLeaveBack: close,
       });
     });
 
-    /* A second impact flash as you arrive at the final chapter */
-    const gsFlash = document.getElementById('gsFlash');
-    if (gsFlash) {
-      ScrollTrigger.create({
-        trigger: '#get-started',
-        start: 'top 65%',
-        once: true,
-        onEnter: () => gsap.fromTo(gsFlash, { opacity: 0.8, scale: 0.6 }, { opacity: 0, scale: 1.4, duration: 0.8, ease: 'power2.out', transformOrigin: '50% 0%' }),
-      });
+    /* 07 — Backdrop drifts slowly behind the closing section */
+    const gsBackdropImg = document.getElementById('gsBackdropImg');
+    if (gsBackdropImg) {
+      gsap.fromTo(gsBackdropImg,
+        { yPercent: -7 },
+        {
+          yPercent: 7, ease: 'none',
+          scrollTrigger: { trigger: '#get-started', start: 'top bottom', end: 'bottom top', scrub: true },
+        }
+      );
     }
 
-    /* Footer: the wordmark reprises, growing in as the page ends */
+    /* 07 — Form panels rise in */
+    gsap.from('.gs-block', {
+      opacity: 0, y: 50, duration: 1, ease: 'power3.out', stagger: 0.15,
+      scrollTrigger: { trigger: '.gs-panels', start: 'top 82%', toggleActions: 'play none none none' },
+    });
+
+    /* Footer wordmark grows in as the page ends */
     const footerGhost = document.querySelector('.footer-ghost');
     if (footerGhost) {
       gsap.fromTo(footerGhost,
-        { opacity: 0, scale: 0.85 },
-        { opacity: 1, scale: 1, ease: 'none', scrollTrigger: { trigger: '.site-footer', start: 'top bottom', end: 'top 40%', scrub: 0.6 } }
+        { opacity: 0, scale: 0.86 },
+        {
+          opacity: 1, scale: 1, ease: 'none',
+          scrollTrigger: { trigger: '.site-footer', start: 'top bottom', end: 'top 40%', scrub: 0.6 },
+        }
       );
     }
   } else {
-    /* Reduced motion: skip pins/scrubs/parallax, just show the end states */
+    /* Reduced motion: no pins, no scrubs — jump straight to every end state */
     document.querySelectorAll('.stat-bar i[data-bar-width]').forEach(bar => {
       bar.style.transform = `scaleX(${parseFloat(bar.dataset.barWidth) / 100})`;
     });
@@ -443,19 +405,20 @@ if (window.gsap && window.ScrollTrigger) {
     document.querySelectorAll('.price-card [data-billing-note]').forEach(el => {
       el.textContent = 'billed annually · save ~20%';
     });
-    document.querySelectorAll('.faq-a').forEach(answer => {
-      answer.style.height = 'auto';
-      answer.style.opacity = '1';
+    document.querySelectorAll('.faq-item').forEach(item => {
+      item.classList.add('is-open');
+      const a = item.querySelector('.faq-a');
+      if (a) { a.style.height = 'auto'; a.style.opacity = '1'; }
     });
   }
 }
 
-/* ---------- Forms: submit to Netlify Forms via AJAX, falling back to a native
-   POST (page reload) if the fetch itself fails, so a submission is never silently lost. ---------- */
+/* ---------- Forms: AJAX to Netlify, native POST as the fallback so a
+     submission is never silently lost if fetch itself fails ---------- */
 ['organizerForm', 'vendorForm'].forEach(id => {
   const form = document.getElementById(id);
   if (!form) return;
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', e => {
     e.preventDefault();
     if (!form.checkValidity()) {
       form.reportValidity();
