@@ -72,9 +72,6 @@
 
   <!-- ============ HERO ============ -->
   <section class="hero" id="top">
-    <!-- Furthest depth plane: the booth sits far behind the deck and drifts
-         least of the three layers, so it reads as distance. -->
-    <img class="hero-backdrop" id="heroBackdrop" src="assets/images/hero-booth-cutout.webp" alt="" aria-hidden="true">
     <div class="shell hero-grid">
       <div class="hero-copy">
         <p class="kicker">Now onboarding founding vendors</p>
@@ -92,44 +89,40 @@
         <div class="scroll-cue"><span class="line" aria-hidden="true"></span>Scroll to explore</div>
       </div>
 
-      <!-- Real listings on separate Z planes inside one perspective.
-           Cursor drives the whole deck's rotation plus per-card parallax. -->
-      <div class="deck-stage" id="deckStage" aria-hidden="true">
-        <div class="deck-glow"></div>
-        <div class="deck" id="deck">
-          <article class="deck-card" data-depth="-260">
-            <div class="deck-card-media">
-              <img src="https://picsum.photos/seed/vendkom-bar-1/640/480" alt="" loading="lazy">
-            </div>
-            <div class="deck-card-body">
-              <div class="deck-row"><span class="deck-tag">Food &amp; Beverages</span><span class="deck-rating">★ 4.9</span></div>
-              <h3>The Copper Cart</h3>
-              <p>Mobile bar &amp; mixology · Any event size</p>
-              <span class="deck-price">From 350 JD</span>
-            </div>
-          </article>
-          <article class="deck-card" data-depth="-110">
-            <div class="deck-card-media">
+      <!-- The subject. Full strength, cursor-reactive: the whole stage tilts in
+           3D, the booth itself counter-drifts, and the light behind it tracks
+           the pointer. Small listing cards sit at its edge. -->
+      <div class="subject-stage" id="subjectStage" aria-hidden="true">
+        <div class="subject-glow" id="subjectGlow"></div>
+        <div class="subject-3d" id="subject3d">
+          <img class="subject-img" id="subjectImg" src="assets/images/hero-booth-cutout.webp" alt="">
+
+          <div class="float-card" data-depth="70">
+            <div class="float-media">
               <img src="assets/images/hero-plated-dish.jpg" alt="" loading="lazy">
             </div>
-            <div class="deck-card-body">
-              <div class="deck-row"><span class="deck-tag">Catering</span><span class="deck-rating">★ 4.8</span></div>
+            <div class="float-body">
+              <span class="float-tag">Catering</span>
               <h3>Saffron &amp; Smoke</h3>
-              <p>Full-service catering · Any headcount</p>
-              <span class="deck-price">From 18 JD/guest</span>
+              <span class="float-price">From 18 JD/guest</span>
             </div>
-          </article>
-          <article class="deck-card" data-depth="40">
-            <div class="deck-card-media">
-              <img src="https://picsum.photos/seed/vendkom-photo-1/640/480" alt="" loading="lazy">
+          </div>
+
+          <div class="float-card float-card-b" data-depth="120">
+            <div class="float-media">
+              <img src="https://picsum.photos/seed/vendkom-photo-1/400/300" alt="" loading="lazy">
             </div>
-            <div class="deck-card-body">
-              <div class="deck-row"><span class="deck-tag">Photography</span><span class="deck-rating">★ 4.9</span></div>
+            <div class="float-body">
+              <span class="float-tag">Photography</span>
               <h3>Golden Hour Studio</h3>
-              <p>Weddings · Portraits · NYC metro</p>
-              <span class="deck-price">From 450 JD</span>
+              <span class="float-price">From 450 JD</span>
             </div>
-          </article>
+          </div>
+
+          <div class="float-chip" data-depth="150">
+            <span class="chip-k">Vetted vendors</span>
+            <span class="chip-v">4 categories</span>
+          </div>
         </div>
       </div>
     </div>

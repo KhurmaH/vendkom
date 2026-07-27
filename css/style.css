@@ -156,20 +156,6 @@ h1, h2, h3, h4 {
   padding: 140px 0 0;
   overflow: hidden;
 }
-/* Deepest hero layer — large, dim and desaturated so it reads as atmosphere
-   behind the deck rather than a competing subject. */
-.hero-backdrop {
-  position: absolute;
-  right: -6%; top: 46%;
-  width: min(58vw, 900px);
-  transform: translateY(-50%);
-  opacity: 0.11;
-  filter: grayscale(0.4) blur(1.5px);
-  pointer-events: none;
-  user-select: none;
-  z-index: 0;
-  will-change: transform;
-}
 .hero-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
@@ -217,62 +203,101 @@ h1, h2, h3, h4 {
 }
 @keyframes cue-drip { to { top: 42px; } }
 
-/* ---------- The 3D deck: real listings on separate Z planes ---------- */
-.deck-stage {
+/* ---------- The subject: one large object, cursor-reactive in real 3D ----------
+   The stage owns the perspective; .subject-3d is the thing that rotates, and
+   everything inside it sits on its own translateZ plane so they separate as
+   it turns. The light behind tracks the pointer independently. */
+.subject-stage {
   position: relative;
-  height: min(74vh, 620px);
-  perspective: 1500px;
-  perspective-origin: 50% 45%;
+  height: min(78vh, 660px);
+  perspective: 1400px;
+  perspective-origin: 50% 50%;
   z-index: 1;
 }
-.deck-glow {
-  position: absolute; top: 46%; left: 50%;
-  width: 130%; aspect-ratio: 1;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(circle, rgba(200,166,98,0.20) 0%, rgba(127,176,212,0.08) 45%, transparent 70%);
-  filter: blur(50px);
+.subject-glow {
+  position: absolute; top: 50%; left: 50%;
+  width: 125%; aspect-ratio: 1;
+  margin: -62.5% 0 0 -62.5%;
+  background: radial-gradient(circle, rgba(200,166,98,0.30) 0%, rgba(127,176,212,0.12) 42%, transparent 68%);
+  filter: blur(56px);
   pointer-events: none;
+  will-change: transform;
 }
-.deck {
+.subject-3d {
   position: absolute; inset: 0;
   transform-style: preserve-3d;
   will-change: transform;
 }
-.deck-card {
+.subject-img {
   position: absolute;
   left: 50%; top: 50%;
-  width: min(330px, 74%);
-  margin: -190px 0 0 -165px;
+  width: 100%;
+  max-width: 660px;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 50px 70px rgba(0,0,0,0.75));
+  user-select: none;
+  will-change: transform;
+}
+
+/* Small listing cards pinned to the subject's edge, each on a nearer plane */
+.float-card {
+  position: absolute;
+  width: 232px;
+  right: -4%; bottom: 8%;
   background: linear-gradient(160deg, var(--black-3), var(--black-2));
   border: 1px solid var(--rule);
   border-radius: 6px;
   overflow: hidden;
-  transform-style: preserve-3d;
+  box-shadow: 0 30px 60px -18px rgba(0,0,0,0.9);
   will-change: transform;
-  box-shadow: 0 40px 70px -20px rgba(0, 0, 0, 0.85);
 }
-.deck-card-media { height: 168px; overflow: hidden; position: relative; }
-.deck-card-media img {
+.float-card-b { right: auto; left: -6%; bottom: auto; top: 10%; width: 216px; }
+.float-media { height: 104px; overflow: hidden; position: relative; }
+.float-media img {
   width: 100%; height: 100%; object-fit: cover;
-  filter: grayscale(0.45) brightness(0.8) contrast(1.08);
+  filter: grayscale(0.4) brightness(0.82) contrast(1.08);
 }
-.deck-card-media::after {
+.float-media::after {
   content: ''; position: absolute; inset: 0;
-  background: linear-gradient(180deg, transparent 40%, rgba(7,7,6,0.85) 100%);
+  background: linear-gradient(180deg, transparent 45%, rgba(7,7,6,0.9) 100%);
 }
-.deck-card-body { padding: 20px 22px 24px; }
-.deck-row {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 12px;
+.float-body { padding: 14px 16px 17px; }
+.float-tag {
+  display: block;
+  font-family: var(--font-mono); font-size: 0.54rem;
+  text-transform: uppercase; letter-spacing: 0.16em;
+  color: var(--gold); margin-bottom: 7px;
 }
+.float-card h3 { font-size: 0.92rem; letter-spacing: -0.02em; margin-bottom: 6px; }
+.float-price { font-family: var(--font-mono); font-size: 0.74rem; color: var(--bone-mute); }
+
+.float-chip {
+  position: absolute;
+  right: 6%; top: 4%;
+  padding: 14px 18px;
+  border-radius: 6px;
+  background: var(--gold);
+  color: var(--black);
+  will-change: transform;
+  box-shadow: 0 24px 44px -16px rgba(0,0,0,0.85);
+}
+.chip-k {
+  display: block;
+  font-family: var(--font-mono); font-size: 0.54rem;
+  text-transform: uppercase; letter-spacing: 0.16em;
+  opacity: 0.75;
+}
+.chip-v {
+  display: block;
+  font-family: var(--font-display); font-weight: 900;
+  font-size: 1.05rem; letter-spacing: -0.02em; margin-top: 4px;
+}
+
+/* Shared tag style still used by the vendor rows further down */
 .deck-tag {
   font-family: var(--font-mono); font-size: 0.58rem;
   text-transform: uppercase; letter-spacing: 0.14em; color: var(--gold);
 }
-.deck-rating { font-family: var(--font-mono); font-size: 0.72rem; color: var(--bone-faint); }
-.deck-card h3 { font-size: 1.05rem; letter-spacing: -0.02em; margin-bottom: 6px; }
-.deck-card p { font-size: 0.8rem; color: var(--bone-mute); margin-bottom: 14px; }
-.deck-price { font-family: var(--font-mono); font-weight: 600; font-size: 0.84rem; }
 
 /* Hero marquee */
 .category-marquee {
@@ -706,7 +731,7 @@ form.submitted .form-success {
    ========================================================================== */
 @media (max-width: 1180px) {
   .hero-grid { grid-template-columns: 1fr; gap: 40px; }
-  .deck-stage { height: 460px; order: -1; }
+  .subject-stage { height: 500px; order: -1; }
   .sticky-split { grid-template-columns: 1fr; gap: 46px; }
   .sticky-side { position: static; }
   .plan { grid-template-columns: minmax(0, 1fr) 180px; gap: 34px; }
@@ -736,9 +761,11 @@ form.submitted .form-success {
 @media (max-width: 640px) {
   .hero { padding-top: 116px; }
   .brand-mark { top: 20px; }
-  .deck-stage { height: 380px; }
-  .deck-card { width: 260px; margin: -160px 0 0 -130px; }
-  .deck-card-media { height: 130px; }
+  .subject-stage { height: 360px; }
+  .float-card { width: 176px; right: -2%; }
+  .float-card-b { display: none; }
+  .float-media { height: 76px; }
+  .float-chip { padding: 10px 13px; right: 2%; }
   .form-row { grid-template-columns: 1fr; }
   .gs-block { padding: 38px 24px; }
   .plan { grid-template-columns: 1fr; gap: 22px; }

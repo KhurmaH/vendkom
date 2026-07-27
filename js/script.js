@@ -1,11 +1,12 @@
 /* ==========================================================================
    Vendkom — motion layer
 
-   The hero centrepiece is a real 3D deck: three listing cards on separate Z
-   planes inside one shared perspective. The cursor rotates the whole deck and
-   simultaneously pushes each card by an amount scaled to its depth, so the
-   near card travels further than the far one — that differential is what
-   reads as depth rather than a flat image tilting.
+   The hero centrepiece is one large subject that reacts to the cursor in real
+   3D. A single pointer read drives four things at different rates: the stage
+   rotates, the object counter-drifts against that rotation, the light behind
+   it tracks the pointer, and each floating card moves by an amount scaled to
+   its own Z depth. That spread between layers is what reads as depth — a
+   single surface tilting uniformly never does.
 
    Performance rules held throughout, since earlier builds stuttered:
      · Nothing is WebGL. Every animated property is a transform or opacity.
@@ -106,7 +107,7 @@ if (window.gsap && window.ScrollTrigger) {
     const cy = gsap.quickTo(cursorDot, 'y', { duration: 0.35, ease: 'power3.out' });
     window.addEventListener('mousemove', e => { cx(e.clientX); cy(e.clientY); }, { passive: true });
     document.querySelectorAll(
-      '.submit-cta, .form-field input, .form-field select, .form-field textarea, .index-row, .plan, .faq-item, .vendor-row, .step, .benefit, .deck-card'
+      '.submit-cta, .form-field input, .form-field select, .form-field textarea, .index-row, .plan, .faq-item, .vendor-row, .step, .benefit, .float-card'
     ).forEach(el => {
       el.addEventListener('mouseenter', () => gsap.to(cursorDot, { scale: 3, duration: 0.25, ease: 'power2.out' }));
       el.addEventListener('mouseleave', () => gsap.to(cursorDot, { scale: 1, duration: 0.3, ease: 'power2.out' }));
@@ -118,83 +119,97 @@ if (window.gsap && window.ScrollTrigger) {
   const onHeroReveal = fn => { if (preloader) heroRevealCallbacks.push(fn); else fn(); };
 
   /* ======================================================================
-     THE 3D DECK
+     THE SUBJECT — one large object that reacts to the cursor in real 3D.
+
+     Three things move off a single pointer read, at different rates:
+       · the whole stage rotates (rotationY/X)
+       · the booth counter-drifts against that rotation
+       · each floating card sits on its own translateZ plane and drifts by an
+         amount scaled to that depth
+     Plus the light behind tracks the pointer, so the object appears lit from
+     wherever the cursor is rather than uniformly.
      ====================================================================== */
-  const deckStage = document.getElementById('deckStage');
-  const deck = document.getElementById('deck');
-  const deckCards = gsap.utils.toArray('.deck-card');
+  const subjectStage = document.getElementById('subjectStage');
+  const subject3d = document.getElementById('subject3d');
+  const subjectImg = document.getElementById('subjectImg');
+  const subjectGlow = document.getElementById('subjectGlow');
+  const floaters = gsap.utils.toArray('.float-card, .float-chip');
 
-  if (deck && deckCards.length) {
-    /* Resting fan. Each card also carries a data-depth translateZ, so they
-       occupy genuinely different planes inside the stage's perspective. */
-    const layout = [
-      { x: -108, y: -40, rz: -9,  drift: 12 },
-      { x: 4,    y: 8,   rz: 1.5, drift: 26 },
-      { x: 112,  y: 54,  rz: 8,   drift: 42 },
-    ];
+  if (subject3d) {
+    /* Pin the centring as GSAP percentage transforms so animating x/y later
+       composes with it instead of overwriting the CSS translate. */
+    if (subjectImg) gsap.set(subjectImg, { xPercent: -50, yPercent: -50 });
+    if (subjectGlow) gsap.set(subjectGlow, { xPercent: 0, yPercent: 0 });
 
-    const setters = deckCards.map((card, i) => {
-      const L = layout[i] || layout[0];
-      const z = parseFloat(card.dataset.depth) || 0;
-      gsap.set(card, { z, x: L.x, y: L.y, rotationZ: L.rz });
-      return {
-        base: L,
-        x: gsap.quickTo(card, 'x', { duration: 0.85, ease: 'power2.out' }),
-        y: gsap.quickTo(card, 'y', { duration: 0.85, ease: 'power2.out' }),
-      };
+    /* Push each floater onto its own plane so rotation separates them */
+    floaters.forEach(el => {
+      gsap.set(el, { z: parseFloat(el.dataset.depth) || 0 });
     });
 
     if (!reduceMotion) {
       onHeroReveal(() => {
-        gsap.from(deckCards, {
-          opacity: 0,
-          yPercent: 26,
-          rotationX: -18,
-          duration: 1.3,
-          ease: 'power3.out',
-          stagger: 0.13,
-        });
-        gsap.from('.deck-glow', { opacity: 0, duration: 1.8, ease: 'none' });
+        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+        if (subjectImg) {
+          tl.from(subjectImg, { opacity: 0, scale: 0.9, duration: 1.4, ease: 'power2.out' }, 0);
+        }
+        tl.from(floaters, { opacity: 0, y: 34, duration: 1, stagger: 0.12 }, 0.35);
+        if (subjectGlow) tl.from(subjectGlow, { opacity: 0, duration: 1.8, ease: 'none' }, 0);
       });
     }
 
-    if (finePointer && !reduceMotion && deckStage) {
-      const rotY = gsap.quickTo(deck, 'rotationY', { duration: 0.85, ease: 'power2.out' });
-      const rotX = gsap.quickTo(deck, 'rotationX', { duration: 0.85, ease: 'power2.out' });
+    if (finePointer && !reduceMotion) {
+      const rotY = gsap.quickTo(subject3d, 'rotationY', { duration: 0.9, ease: 'power2.out' });
+      const rotX = gsap.quickTo(subject3d, 'rotationX', { duration: 0.9, ease: 'power2.out' });
 
-      /* Deepest layer moves least — the drift ladder across backdrop → cards
-         is what sells the depth. */
-      const heroBackdrop = document.getElementById('heroBackdrop');
-      const bdX = heroBackdrop ? gsap.quickTo(heroBackdrop, 'x', { duration: 1.1, ease: 'power2.out' }) : null;
+      const imgX = subjectImg ? gsap.quickTo(subjectImg, 'x', { duration: 1, ease: 'power2.out' }) : null;
+      const imgY = subjectImg ? gsap.quickTo(subjectImg, 'y', { duration: 1, ease: 'power2.out' }) : null;
 
-      /* One handler drives the container rotation and every card's offset.
-         Cards nearer the viewer get a larger drift, which is the whole
-         illusion — parallax between planes, not a single flat tilt.
-         Bound to the hero so the deck reacts before the cursor is over it. */
-      const heroEl = document.querySelector('.hero');
-      const driver = heroEl || deckStage;
+      const glowX = subjectGlow ? gsap.quickTo(subjectGlow, 'x', { duration: 1.1, ease: 'power2.out' }) : null;
+      const glowY = subjectGlow ? gsap.quickTo(subjectGlow, 'y', { duration: 1.1, ease: 'power2.out' }) : null;
+
+      const floatSetters = floaters.map(el => ({
+        depth: parseFloat(el.dataset.depth) || 0,
+        x: gsap.quickTo(el, 'x', { duration: 0.85, ease: 'power2.out' }),
+        y: gsap.quickTo(el, 'y', { duration: 0.85, ease: 'power2.out' }),
+      }));
+
+      /* Bound to the whole hero so the subject responds as soon as the cursor
+         is anywhere in the viewport's first screen, not only when directly
+         over the image. */
+      const driver = document.querySelector('.hero') || subjectStage;
 
       driver.addEventListener('mousemove', e => {
         const r = driver.getBoundingClientRect();
         const rx = (e.clientX - r.left) / r.width - 0.5;
         const ry = (e.clientY - r.top) / r.height - 0.5;
 
-        rotY(rx * 26);
-        rotX(-ry * 18);
+        rotY(rx * 22);
+        rotX(-ry * 15);
 
-        setters.forEach(s => {
-          s.x(s.base.x + rx * s.base.drift);
-          s.y(s.base.y + ry * s.base.drift * 0.6);
+        /* The subject counter-drifts against the rotation — this is what makes
+           it feel like a solid object being turned rather than a tilting plane. */
+        if (imgX) imgX(rx * -34);
+        if (imgY) imgY(ry * -20);
+
+        /* Light follows the pointer */
+        if (glowX) glowX(rx * 90);
+        if (glowY) glowY(ry * 70);
+
+        /* Nearer cards travel further */
+        floatSetters.forEach(s => {
+          const k = s.depth / 40;
+          s.x(rx * k * 9);
+          s.y(ry * k * 7);
         });
-
-        if (bdX) bdX(rx * -18);
       }, { passive: true });
 
       driver.addEventListener('mouseleave', () => {
-        rotY(0);
-        rotX(0);
-        setters.forEach(s => { s.x(s.base.x); s.y(s.base.y); });
-        if (bdX) bdX(0);
+        rotY(0); rotX(0);
+        if (imgX) imgX(0);
+        if (imgY) imgY(0);
+        if (glowX) glowX(0);
+        if (glowY) glowY(0);
+        floatSetters.forEach(s => { s.x(0); s.y(0); });
       });
     }
   }
@@ -216,9 +231,8 @@ if (window.gsap && window.ScrollTrigger) {
         scrollTrigger: { trigger: heroSection, start: 'top top', end: '+=70%', scrub: 0.6, pin: true },
       });
       tl.to('.hero-copy', { opacity: 0, y: -70, ease: 'none' }, 0)
-        .to('.category-marquee', { opacity: 0, ease: 'none' }, 0)
-        .to('.hero-backdrop', { opacity: 0, scale: 1.1, ease: 'none' }, 0);
-      if (deck) tl.to(deck, { y: -70, scale: 1.06, opacity: 0.2, ease: 'none' }, 0);
+        .to('.category-marquee', { opacity: 0, ease: 'none' }, 0);
+      if (subject3d) tl.to(subject3d, { y: -70, scale: 1.06, opacity: 0.2, ease: 'none' }, 0);
     }
 
     /* ---------- Shared band-head entrance ---------- */
