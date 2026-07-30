@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Vendkom">
+  <defs>
+    <linearGradient id="vk" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1f5075"/>
+      <stop offset="60%" stop-color="#2f6d9e"/>
+      <stop offset="90%" stop-color="#ee9d2b"/>
+      <stop offset="100%" stop-color="#ee9d2b"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="512" height="512" rx="113" fill="url(#vk)"/>
+  <path d="M 138.24 129.32 L 227.45 381.49 L 282.17 381.49 L 372.57 129.32 L 319.04 129.32 L 256.0 313.69 L 194.15 129.32 Z" fill="#ffffff"/>
+</svg>
