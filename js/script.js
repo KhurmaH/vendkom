@@ -100,6 +100,17 @@ if (window.gsap && window.ScrollTrigger) {
     scrollTrigger: { trigger: document.body, start: 'top top', end: 'bottom bottom', scrub: 0.3 },
   });
 
+  /* Nav condenses once you leave the top. A single class toggle on enter/leave
+     rather than anything per-tick, so it costs nothing while scrolling. */
+  const siteNav = document.querySelector('.site-nav');
+  if (siteNav) {
+    ScrollTrigger.create({
+      start: 'top -80',
+      end: 99999,
+      onToggle: self => siteNav.classList.toggle('is-condensed', self.isActive),
+    });
+  }
+
   /* ---------- Custom cursor ---------- */
   const cursorDot = document.getElementById('cursorDot');
   if (cursorDot && finePointer) {
@@ -235,11 +246,68 @@ if (window.gsap && window.ScrollTrigger) {
       if (subject3d) tl.to(subject3d, { y: -70, scale: 1.06, opacity: 0.2, ease: 'none' }, 0);
     }
 
-    /* ---------- Shared band-head entrance ---------- */
+    /* ---------- Headlines reveal word by word ----------
+       Each word is wrapped in a clipping span so it rises out of nothing
+       rather than just fading. Done in JS so the markup stays clean, and
+       skipped for anything containing markup we'd destroy by rewriting. */
+    const splitHeading = el => {
+      if (el.dataset.split === 'done') return null;
+      const parts = [];
+      el.childNodes.forEach(node => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          node.textContent.split(/(\s+)/).forEach(chunk => {
+            if (!chunk.trim()) { parts.push(document.createTextNode(chunk)); return; }
+            const w = document.createElement('span');
+            w.className = 'word';
+            const i = document.createElement('i');
+            i.textContent = chunk;
+            w.appendChild(i);
+            parts.push(w);
+          });
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+          /* keep inline elements (like <em>) intact, wrap them whole */
+          const w = document.createElement('span');
+          w.className = 'word';
+          const i = document.createElement('i');
+          i.appendChild(node.cloneNode(true));
+          w.appendChild(i);
+          parts.push(w);
+        }
+      });
+      el.textContent = '';
+      parts.forEach(p => el.appendChild(p));
+      el.dataset.split = 'done';
+      return el.querySelectorAll('.word > i');
+    };
+
+    document.querySelectorAll('.page-hero h1, .band-head h2, .close-head h2').forEach(h => {
+      const words = splitHeading(h);
+      if (!words || !words.length) return;
+      gsap.from(words, {
+        yPercent: 118,
+        duration: 0.95,
+        ease: 'power3.out',
+        stagger: 0.055,
+        scrollTrigger: { trigger: h, start: 'top 86%', toggleActions: 'play none none none' },
+      });
+    });
+
+    /* ---------- Shared band-head entrance (everything except the heading,
+                  which now runs its own word reveal) ---------- */
     document.querySelectorAll('.band-head, .close-head').forEach(head => {
-      gsap.from(head, {
-        opacity: 0, y: 36, duration: 1, ease: 'power3.out',
+      const bits = head.querySelectorAll('.kicker, .lede, p:not(.kicker)');
+      if (!bits.length) return;
+      gsap.from(bits, {
+        opacity: 0, y: 26, duration: 0.9, ease: 'power3.out', stagger: 0.08,
         scrollTrigger: { trigger: head, start: 'top 84%', toggleActions: 'play none none none' },
+      });
+    });
+
+    /* ---------- Section numerals drift against the scroll ---------- */
+    gsap.utils.toArray('.band-numeral').forEach(n => {
+      gsap.fromTo(n, { y: -26 }, {
+        y: 26, ease: 'none',
+        scrollTrigger: { trigger: n.closest('.band') || n, start: 'top bottom', end: 'bottom top', scrub: true },
       });
     });
 
@@ -267,6 +335,116 @@ if (window.gsap && window.ScrollTrigger) {
           onEnter: () => setLive(key),
           onEnterBack: () => setLive(key),
         });
+      });
+    }
+
+    /* ---------- Page hero (the two path pages) ---------- */
+    const pageHero = document.querySelector('.page-hero');
+    if (pageHero) {
+      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+      tl.from(pageHero.querySelectorAll('.kicker'), { opacity: 0, y: 20, duration: 0.7 })
+        .from(pageHero.querySelectorAll('.lede'), { opacity: 0, y: 24, duration: 0.9 }, '-=0.5')
+        .from(pageHero.querySelectorAll('.hero-actions .btn'), {
+          opacity: 0, y: 20, duration: 0.7, stagger: 0.1,
+        }, '-=0.6');
+      const fig = pageHero.querySelector('.page-hero-figure img');
+      if (fig) {
+        tl.from(fig, {
+          clipPath: 'inset(0 0 100% 0)',
+          scale: 1.12,
+          duration: 1.3,
+          ease: 'power3.out',
+        }, 0.2);
+        /* and it drifts as you scroll past */
+        gsap.fromTo(fig, { yPercent: -4 }, {
+          yPercent: 4, ease: 'none',
+          scrollTrigger: { trigger: pageHero, start: 'top top', end: 'bottom top', scrub: true },
+        });
+      }
+    }
+
+    /* ---------- The 5-step flow: spine fills, nodes ignite ---------- */
+    document.querySelectorAll('.flow').forEach(flow => {
+      const steps = Array.from(flow.querySelectorAll('.flow-step'));
+      if (!steps.length) return;
+
+      const spine = document.createElement('div');
+      spine.className = 'flow-spine';
+      flow.appendChild(spine);
+
+      /* Spine fill is a pure scaleY scrub — no layout, no DOM writes */
+      gsap.to(spine, {
+        scaleY: 1, ease: 'none',
+        scrollTrigger: { trigger: flow, start: 'top 62%', end: 'bottom 72%', scrub: 0.5 },
+      });
+
+      steps.forEach(step => {
+        gsap.from(step, {
+          opacity: 0, x: -34, duration: 0.9, ease: 'power3.out',
+          scrollTrigger: { trigger: step, start: 'top 86%', toggleActions: 'play none none none' },
+        });
+        /* class toggles only, and only on enter/leave — not per scroll tick */
+        ScrollTrigger.create({
+          trigger: step,
+          start: 'top 68%',
+          end: 'bottom 40%',
+          onEnter: () => step.classList.add('is-active'),
+          onEnterBack: () => step.classList.add('is-active'),
+          onLeaveBack: () => step.classList.remove('is-active'),
+        });
+      });
+    });
+
+    /* ---------- Requirement cards ---------- */
+    document.querySelectorAll('.req-grid').forEach(grid => {
+      gsap.from(grid.querySelectorAll('.req'), {
+        opacity: 0, y: 44, rotateX: -12, transformPerspective: 900,
+        duration: 0.9, ease: 'power3.out', stagger: 0.07,
+        scrollTrigger: { trigger: grid, start: 'top 84%', toggleActions: 'play none none none' },
+      });
+    });
+
+    /* ---------- Stats band ---------- */
+    document.querySelectorAll('.stats-band').forEach(band => {
+      gsap.from(band.querySelectorAll('.stat-cell'), {
+        opacity: 0, y: 36, duration: 0.9, ease: 'power3.out', stagger: 0.1,
+        scrollTrigger: { trigger: band, start: 'top 86%', toggleActions: 'play none none none' },
+      });
+    });
+
+    /* ---------- Home path cards: rise, then tilt toward the cursor ---------- */
+    const pathCards = gsap.utils.toArray('.path-card');
+    if (pathCards.length) {
+      gsap.from(pathCards, {
+        opacity: 0, y: 54, duration: 1, ease: 'power3.out', stagger: 0.13,
+        scrollTrigger: { trigger: '.path-cta', start: 'top 84%', toggleActions: 'play none none none' },
+      });
+      if (finePointer) {
+        pathCards.forEach(card => {
+          gsap.set(card, { transformPerspective: 1000 });
+          const rx = gsap.quickTo(card, 'rotationX', { duration: 0.5, ease: 'power2.out' });
+          const ry = gsap.quickTo(card, 'rotationY', { duration: 0.5, ease: 'power2.out' });
+          card.addEventListener('mousemove', e => {
+            const r = card.getBoundingClientRect();
+            ry(((e.clientX - r.left) / r.width - 0.5) * 8);
+            rx(-((e.clientY - r.top) / r.height - 0.5) * 8);
+          }, { passive: true });
+          card.addEventListener('mouseleave', () => { rx(0); ry(0); });
+        });
+      }
+    }
+
+    /* ---------- Buttons pull toward the cursor ---------- */
+    if (finePointer) {
+      document.querySelectorAll('.btn, .nav-cta').forEach(btn => {
+        const bx = gsap.quickTo(btn, 'x', { duration: 0.4, ease: 'power3.out' });
+        const by = gsap.quickTo(btn, 'y', { duration: 0.4, ease: 'power3.out' });
+        btn.addEventListener('mousemove', e => {
+          const r = btn.getBoundingClientRect();
+          bx((e.clientX - r.left - r.width / 2) * 0.28);
+          by((e.clientY - r.top - r.height / 2) * 0.4);
+        }, { passive: true });
+        btn.addEventListener('mouseleave', () => { bx(0); by(0); });
       });
     }
 
@@ -436,6 +614,9 @@ if (window.gsap && window.ScrollTrigger) {
     document.querySelectorAll('.faq-a').forEach(a => { a.style.height = 'auto'; a.style.opacity = '1'; });
     const firstPath = document.querySelector('#pathSwitch span');
     if (firstPath) firstPath.classList.add('is-live');
+    /* The flow's numerals and nodes are driven by a scroll class — without it
+       they'd read as permanently "not reached", so light them all up. */
+    document.querySelectorAll('.flow-step').forEach(s => s.classList.add('is-active'));
   }
 }
 
