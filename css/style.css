@@ -97,7 +97,7 @@ h1, h2, h3, h4 {
 }
 .preloader.is-done { clip-path: circle(0% at 50% 50%); pointer-events: none; }
 .preloader-mark path {
-  fill: none; stroke: var(--orange); stroke-width: 9;
+  fill: none; stroke: url(#markGradient); stroke-width: 9;
   stroke-linecap: round; stroke-linejoin: round;
   stroke-dasharray: 1; stroke-dashoffset: 1;
 }
@@ -136,11 +136,18 @@ h1, h2, h3, h4 {
   color: var(--ink);
   flex-shrink: 0;
 }
+/* The mark carries all three brand colours in one diagonal sweep. The stops
+   are weighted deliberately: deep blue holds the first half so the white
+   letterform keeps 8.5:1 where it actually sits, and orange lands as a
+   corner accent rather than a 50/50 split — an even blend would drop the V
+   to about 2.2:1 against the orange end. */
 .brand-mark .mark {
   width: 30px; height: 30px; border-radius: 8px;
-  background: var(--orange); color: var(--ink);
+  background: linear-gradient(135deg, var(--blue-dp) 0%, var(--blue) 60%, var(--orange) 90%);
+  color: var(--white);
   display: inline-flex; align-items: center; justify-content: center;
   font-size: 0.95rem; font-weight: 900;
+  box-shadow: 0 2px 10px -2px rgba(31, 80, 117, 0.5);
 }
 .brand-mark:focus-visible { outline: 2px solid var(--blue); outline-offset: 4px; }
 
@@ -914,7 +921,8 @@ form.submitted .form-success {
 .footer-brand-mark {
   display: inline-flex; align-items: center; justify-content: center;
   width: 44px; height: 44px; border-radius: 10px;
-  background: var(--orange); color: var(--ink);
+  background: linear-gradient(135deg, var(--blue-dp) 0%, var(--blue) 60%, var(--orange) 90%);
+  color: var(--white);
   font-family: var(--font-display); font-weight: 900; font-size: 1.15rem;
   margin-bottom: 24px;
 }

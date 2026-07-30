@@ -33,6 +33,15 @@
 
 <div class="preloader" id="preloader" aria-hidden="true">
   <svg class="preloader-mark" viewBox="0 0 100 100" width="70" height="70">
+    <defs>
+      <!-- Sits on the deep-blue curtain, so the stroke sweeps white to orange —
+           the blue is supplied by the backdrop itself. -->
+      <linearGradient id="markGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#ffffff"></stop>
+        <stop offset="55%" stop-color="#dbe9f3"></stop>
+        <stop offset="100%" stop-color="#ee9d2b"></stop>
+      </linearGradient>
+    </defs>
     <path d="M20 22 L50 78 L80 22" pathLength="1"></path>
   </svg>
   <div class="preloader-count" id="preloaderCount">0%</div>
