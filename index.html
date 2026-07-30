@@ -4,24 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vendkom — Book vetted vendors for your next event</title>
-<meta name="description" content="Vendkom connects event organizers with vetted startup vendors — food & beverage, photography, and more. We handle the logistics and the marketing.">
+<meta name="description" content="Vendkom connects event organizers with vetted startup vendors — catering, food & beverage, photography and videography. We handle the logistics and the marketing.">
 <meta name="theme-color" content="#ffffff">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://vendkom.com/">
 <meta property="og:title" content="Vendkom — Book vetted vendors for your next event">
-<meta property="og:description" content="Vendkom connects event organizers with vetted startup vendors — food & beverage, photography, and more. We handle the logistics and the marketing.">
+<meta property="og:description" content="Vendkom connects event organizers with vetted startup vendors — catering, food & beverage, photography and videography. We handle the logistics and the marketing.">
 <meta property="og:image" content="https://vendkom.com/icons/icon-512.png">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Vendkom — Book vetted vendors for your next event">
-<meta name="twitter:description" content="Vendkom connects event organizers with vetted startup vendors — food & beverage, photography, and more. We handle the logistics and the marketing.">
+<meta name="twitter:description" content="Vendkom connects event organizers with vetted startup vendors — catering, food & beverage, photography and videography. We handle the logistics and the marketing.">
 <meta name="twitter:image" content="https://vendkom.com/icons/icon-512.png">
-<link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png">
-<link rel="icon" type="image/png" sizes="48x48" href="/icons/icon-48.png">
-<link rel="icon" type="image/png" sizes="96x96" href="/icons/icon-96.png">
-<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180.png">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="icons/icon-48.png">
+<link rel="icon" type="image/png" sizes="96x96" href="icons/icon-96.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=JetBrains+Mono:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -31,8 +31,6 @@
 
 <a class="skip-link" href="#main">Skip to content</a>
 
-<!-- Curtain intro. Always resolves — script.js holds a hard timeout fallback
-     so a slow connection can never trap a visitor behind it. -->
 <div class="preloader" id="preloader" aria-hidden="true">
   <svg class="preloader-mark" viewBox="0 0 100 100" width="70" height="70">
     <path d="M20 22 L50 78 L80 22" pathLength="1"></path>
@@ -42,7 +40,6 @@
 
 <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
 
-<!-- Floating preview for the category index — one node, image swapped on hover -->
 <div class="index-preview" id="indexPreview" aria-hidden="true">
   <img data-preview="catering" src="assets/images/hero-plated-dish.jpg" alt="">
   <img data-preview="beverages" src="assets/images/hero-champagne.jpg" alt="">
@@ -52,21 +49,17 @@
 
 <div class="scroll-progress" aria-hidden="true"><div class="scroll-progress-fill" id="scrollProgressFill"></div></div>
 
-<a class="brand-mark" href="#top" title="Back to top">
-  <span class="mark">V</span>
-  <span>Vendkom</span>
-</a>
-
-<div class="chapter-rail" id="chapterRail" aria-hidden="true">
-  <i data-rail-for="top"></i>
-  <i data-rail-for="how-it-works"></i>
-  <i data-rail-for="categories"></i>
-  <i data-rail-for="vendors"></i>
-  <i data-rail-for="for-vendors"></i>
-  <i data-rail-for="pricing"></i>
-  <i data-rail-for="faq"></i>
-  <i data-rail-for="get-started"></i>
-</div>
+<header class="site-nav">
+  <div class="nav-inner">
+    <a class="brand-mark" href="index.html"><span class="mark">V</span><span>Vendkom</span></a>
+    <nav class="nav-links">
+      <a href="index.html" class="is-current">Home</a>
+      <a href="for-organizers.html">Plan an event</a>
+      <a href="for-vendors.html">Become a vendor</a>
+    </nav>
+    <a class="nav-cta" href="for-organizers.html#start">Get started</a>
+  </div>
+</header>
 
 <main id="main">
 
@@ -86,12 +79,14 @@
           <li>Full logistics support</li>
           <li>No booking headaches</li>
         </ul>
-        <div class="scroll-cue"><span class="line" aria-hidden="true"></span>Scroll to explore</div>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="for-organizers.html">I'm planning an event <span class="arrow">→</span></a>
+          <a class="btn btn-ghost" href="for-vendors.html">I'm a vendor <span class="arrow">→</span></a>
+        </div>
       </div>
 
-      <!-- The subject. Full strength, cursor-reactive: the whole stage tilts in
-           3D, the booth itself counter-drifts, and the light behind it tracks
-           the pointer. Small listing cards sit at its edge. -->
+      <!-- Cursor-reactive subject: the stage rotates, the booth counter-drifts,
+           the light tracks the pointer, and each card sits on its own Z plane. -->
       <div class="subject-stage" id="subjectStage" aria-hidden="true">
         <div class="subject-glow" id="subjectGlow"></div>
         <div class="subject-3d" id="subject3d">
@@ -137,7 +132,7 @@
     </div>
   </section>
 
-  <!-- ============ 01 — HOW IT WORKS (sticky split) ============ -->
+  <!-- ============ 01 — HOW IT WORKS ============ -->
   <section class="band" id="how-it-works">
     <div class="shell">
       <div class="band-head">
@@ -145,14 +140,14 @@
         <div>
           <p class="kicker">How it works</p>
           <h2>One platform, both sides of the event</h2>
-          <p class="lede">An organizer's path and a vendor's path, running side by side — scroll to follow either one.</p>
+          <p class="lede">An organizer's path and a vendor's path, running side by side. Whichever side you're on, the same team is coordinating the other end of the booking.</p>
         </div>
       </div>
 
       <div class="sticky-split">
         <aside class="sticky-side">
           <h3>Two paths, one system</h3>
-          <p>Whichever side you're on, the same team is coordinating the other end of the booking.</p>
+          <p>Pick your side below for the full walkthrough — each has its own five-step plan, requirements, and sign-up.</p>
           <div class="path-switch" id="pathSwitch">
             <span data-path="organizer">For organizers</span>
             <span data-path="vendor">For vendors</span>
@@ -214,7 +209,7 @@
     </div>
   </section>
 
-  <!-- ============ 02 — CATEGORIES (hover-reveal index) ============ -->
+  <!-- ============ 02 — CATEGORIES ============ -->
   <section class="band band--paper" id="categories">
     <div class="shell">
       <div class="band-head">
@@ -222,7 +217,7 @@
         <div>
           <p class="kicker">Categories</p>
           <h2>Vendors for every kind of event</h2>
-          <p class="lede">Keep scrolling — this row moves sideways. Starting focused on four categories, more added as new startup vendors join.</p>
+          <p class="lede">Starting focused on four categories, more added as new startup vendors join.</p>
         </div>
       </div>
 
@@ -251,7 +246,7 @@
     </div>
   </section>
 
-  <!-- ============ 03 — VENDORS (alternating editorial rows) ============ -->
+  <!-- ============ 03 — VENDORS ============ -->
   <section class="band" id="vendors">
     <div class="shell">
       <div class="band-head">
@@ -327,83 +322,8 @@
     </div>
   </section>
 
-  <!-- ============ 04 — FOR VENDORS (stats band + benefit grid) ============ -->
-  <section class="band band--tint" id="for-vendors">
-    <div class="shell">
-      <div class="band-head">
-        <span class="band-numeral" aria-hidden="true">04</span>
-        <div>
-          <p class="kicker">For vendors</p>
-          <h2>We grow your bookings, so you can grow your business</h2>
-          <p class="lede">
-            Vendkom was built for startup vendors who make great food, take great photos, and run great events —
-            but don't have time to also run marketing and logistics. That's our job.
-          </p>
-        </div>
-      </div>
-
-      <div class="stats-band">
-        <div class="stat-cell">
-          <span class="num" data-count-to="128" data-count-suffix="%">0%</span>
-          <span class="label">Avg. profile view lift</span>
-        </div>
-        <div class="stat-cell">
-          <span class="num" data-count-to="4" data-count-suffix="">0</span>
-          <span class="label">Vendor categories</span>
-        </div>
-        <div class="stat-cell">
-          <span class="num" data-count-to="15" data-count-suffix="%">0%</span>
-          <span class="label">Starting commission</span>
-        </div>
-      </div>
-
-      <div class="benefit-grid" id="benefitGrid">
-        <div class="benefit">
-          <span class="benefit-mark">✓</span>
-          <h4>Marketing, handled</h4>
-          <p>Our marketing team runs your listing, social promotion, and search placement — no agency needed.</p>
-        </div>
-        <div class="benefit">
-          <span class="benefit-mark">✓</span>
-          <h4>More bookings</h4>
-          <p>Get in front of organizers who are actively planning and ready to book.</p>
-        </div>
-        <div class="benefit">
-          <span class="benefit-mark">✓</span>
-          <h4>Logistics support</h4>
-          <p>Contracts, scheduling, and event-day coordination — we handle the back office.</p>
-        </div>
-        <div class="benefit">
-          <span class="benefit-mark">✓</span>
-          <h4>Fair, transparent pricing</h4>
-          <p>Know exactly what you pay. No hidden fees, no long-term lock-in.</p>
-        </div>
-        <div class="benefit">
-          <span class="benefit-mark">✓</span>
-          <h4>Built for startups</h4>
-          <p>No massive upfront costs — start on our free plan and upgrade as bookings grow.</p>
-        </div>
-        <div class="benefit">
-          <span class="benefit-mark">✓</span>
-          <h4>Dedicated support</h4>
-          <p>Real people helping you grow, not a support ticket queue.</p>
-        </div>
-      </div>
-
-      <div class="dash" aria-hidden="true">
-        <p class="dash-label">Vendor dashboard</p>
-        <div class="dash-rows">
-          <div class="dash-row"><span>Profile views</span><span class="stat-bar"><i data-bar-width="78"></i></span></div>
-          <div class="dash-row"><span>Booking requests</span><span class="stat-bar"><i data-bar-width="58"></i></span></div>
-          <div class="dash-row"><span>Confirmed events</span><span class="stat-bar"><i data-bar-width="40"></i></span></div>
-        </div>
-        <p class="dash-note">Marketing campaign live · managed by Vendkom</p>
-      </div>
-    </div>
-  </section>
-
   <!-- ============ CATEGORIES WE SUPPORT ============ -->
-  <section class="band" style="padding: 80px 0;">
+  <section class="band band--paper" style="padding: 80px 0;">
     <div class="shell">
       <p class="kicker" style="margin-bottom: 26px;">Categories we support</p>
       <p class="tag-strip">
@@ -412,203 +332,43 @@
     </div>
   </section>
 
-  <!-- ============ 05 — PRICING (wide rows) ============ -->
-  <section class="band" id="pricing">
+  <!-- ============ CHOOSE YOUR PATH ============ -->
+  <section class="band" id="get-started">
     <div class="shell">
       <div class="band-head">
-        <span class="band-numeral" aria-hidden="true">05</span>
+        <span class="band-numeral" aria-hidden="true">04</span>
         <div>
-          <p class="kicker">Pricing</p>
-          <h2>Plans that grow with your business</h2>
-          <p class="lede">Organizers always use Vendkom for free. Watch each price settle into its annual rate as you scroll.</p>
+          <p class="kicker">Get started</p>
+          <h2>Tell us who you are, we'll take it from there</h2>
+          <p class="lede">Founding vendors and early organizers get priority onboarding as we launch. Each path has a full walkthrough, a five-step plan, and its own sign-up.</p>
         </div>
       </div>
 
-      <div class="plan-list">
-        <div class="plan">
-          <div class="plan-id">
-            <h3>Starter</h3>
-            <p>Get listed and start booking</p>
-          </div>
-          <div class="plan-price">
-            <span class="amount" data-monthly="0" data-annual="0">0 JD</span>
-            <span class="period">/mo</span>
-            <span class="billing">free, no commitment</span>
-            <span class="commission">15% commission per booking</span>
-          </div>
-          <ul class="plan-features">
-            <li>Marketplace listing</li>
-            <li>Up to 5 bookings / month</li>
-            <li>Standard search placement</li>
-            <li>Email support</li>
+      <div class="path-cta">
+        <div class="path-card path-card--organizer">
+          <p class="kicker">I'm planning an event</p>
+          <h3>Plan an event</h3>
+          <p>Tell us what you're planning and get matched with vetted vendors that fit your date, area and budget.</p>
+          <ul class="path-list">
+            <li>Always free for organizers</li>
+            <li>Matched shortlist within 48 hours</li>
+            <li>Contracts and scheduling handled for you</li>
+            <li>One team coordinating every vendor you book</li>
           </ul>
+          <a class="btn btn-primary" href="for-organizers.html">See how it works <span class="arrow">→</span></a>
         </div>
 
-        <div class="plan is-featured">
-          <div class="plan-id">
-            <h3>Growth</h3>
-            <p>For vendors ready to scale bookings</p>
-            <span class="plan-badge">Most popular</span>
-          </div>
-          <div class="plan-price">
-            <span class="amount" data-monthly="25" data-annual="20">25 JD</span>
-            <span class="period">/mo</span>
-            <span class="billing" data-billing-note>billed monthly</span>
-            <span class="commission">10% commission per booking</span>
-          </div>
-          <ul class="plan-features">
-            <li>Unlimited bookings</li>
-            <li>Marketing boost &amp; featured placement</li>
-            <li>Dedicated onboarding</li>
-            <li>Priority support</li>
+        <div class="path-card path-card--vendor">
+          <p class="kicker">I'm a vendor</p>
+          <h3>Become a vendor</h3>
+          <p>Join a curated network of startup vendors and let our team run the marketing and back office for you.</p>
+          <ul class="path-list">
+            <li>Start free, upgrade as bookings grow</li>
+            <li>Marketing and listing managed for you</li>
+            <li>Contracts, scheduling and event-day support</li>
+            <li>Five-step onboarding, live in about a week</li>
           </ul>
-        </div>
-
-        <div class="plan">
-          <div class="plan-id">
-            <h3>Pro</h3>
-            <p>Full-service growth &amp; logistics</p>
-          </div>
-          <div class="plan-price">
-            <span class="amount" data-monthly="75" data-annual="59">75 JD</span>
-            <span class="period">/mo</span>
-            <span class="billing" data-billing-note>billed monthly</span>
-            <span class="commission">6% commission per booking</span>
-          </div>
-          <ul class="plan-features">
-            <li>Everything in Growth</li>
-            <li>Dedicated marketing campaigns</li>
-            <li>Personal account manager</li>
-            <li>Full event-day logistics support</li>
-            <li>Top placement in your category</li>
-          </ul>
-        </div>
-      </div>
-      <p class="plan-footnote">Commission applies only to bookings made through Vendkom. No setup fees. Cancel anytime.</p>
-    </div>
-  </section>
-
-  <!-- ============ 06 — FAQ (two columns, numbered) ============ -->
-  <section class="band band--paper" id="faq">
-    <div class="shell">
-      <div class="band-head">
-        <span class="band-numeral" aria-hidden="true">06</span>
-        <div>
-          <p class="kicker">FAQ</p>
-          <h2>Good to know</h2>
-          <p class="lede">Keep scrolling — each answer opens on its own as it reaches you.</p>
-        </div>
-      </div>
-
-      <div class="faq-grid">
-        <div class="faq-item">
-          <h3><span class="faq-n">01</span><span>Is Vendkom free for event organizers?</span></h3>
-          <div class="faq-a"><p>Yes. Browsing, matching, and booking through Vendkom is always free for organizers. We work directly with vendors on pricing and logistics.</p></div>
-        </div>
-        <div class="faq-item">
-          <h3><span class="faq-n">02</span><span>What does it cost to join as a vendor?</span></h3>
-          <div class="faq-a"><p>Vendors can join for free on our Starter plan, or choose Growth or Pro for more bookings, marketing support, and lower commission per booking.</p></div>
-        </div>
-        <div class="faq-item">
-          <h3><span class="faq-n">03</span><span>What kind of vendors can apply?</span></h3>
-          <div class="faq-a"><p>We're currently focused on food &amp; beverage and photography, and are expanding into videography, décor, entertainment, and rentals.</p></div>
-        </div>
-        <div class="faq-item">
-          <h3><span class="faq-n">04</span><span>How does the marketing support work?</span></h3>
-          <div class="faq-a"><p>On Growth and Pro plans, our marketing team promotes your listing across search, social, and email to organizers actively planning events in your area.</p></div>
-        </div>
-        <div class="faq-item">
-          <h3><span class="faq-n">05</span><span>Who handles logistics on the day of the event?</span></h3>
-          <div class="faq-a"><p>Vendkom coordinates scheduling, contracts, and communication between you and the organizer. On Pro, our team provides full event-day logistics support.</p></div>
-        </div>
-        <div class="faq-item">
-          <h3><span class="faq-n">06</span><span>Can I change or cancel my plan?</span></h3>
-          <div class="faq-a"><p>Yes — upgrade, downgrade, or cancel at any time from your vendor dashboard. There's no long-term contract.</p></div>
-        </div>
-        <div class="faq-item">
-          <h3><span class="faq-n">07</span><span>What types of events does Vendkom support?</span></h3>
-          <div class="faq-a"><p>Anything from birthdays and private parties to weddings and corporate events, public or private, of any size.</p></div>
-        </div>
-        <div class="faq-item">
-          <h3><span class="faq-n">08</span><span>How are vendors vetted?</span></h3>
-          <div class="faq-a"><p>Every vendor application is reviewed by our team before going live, so organizers can book with confidence.</p></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ 07 — GET STARTED ============ -->
-  <section class="close-band" id="get-started">
-    <div class="close-backdrop" aria-hidden="true">
-      <img id="closeBackdropImg" src="assets/images/hero-champagne.jpg" alt="" loading="lazy">
-    </div>
-    <div class="shell">
-      <div class="close-head">
-        <p class="kicker" style="justify-content:center;">Get started</p>
-        <h2>Tell us who you are, we'll take it from there</h2>
-        <p>Founding vendors and early organizers get priority onboarding as we launch.</p>
-      </div>
-
-      <div class="gs-panels">
-        <div class="gs-block">
-          <p class="gs-block-label">I'm planning an event</p>
-          <form id="organizerForm" name="organizer-signup" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" novalidate>
-            <input type="hidden" name="form-name" value="organizer-signup">
-            <p style="display:none;"><label>Leave this field empty: <input name="bot-field"></label></p>
-            <div class="form-row">
-              <div class="form-field"><label for="orgName">Full name</label><input type="text" id="orgName" name="name" required></div>
-              <div class="form-field"><label for="orgEmail">Email</label><input type="email" id="orgEmail" name="email" required></div>
-            </div>
-            <div class="form-row">
-              <div class="form-field">
-                <label for="orgEventType">Event type</label>
-                <select id="orgEventType" name="eventType">
-                  <option>Wedding</option>
-                  <option>Birthday</option>
-                  <option>Corporate event</option>
-                  <option>Private party</option>
-                  <option>Other</option>
-                </select>
-              </div>
-              <div class="form-field"><label for="orgDate">Event date</label><input type="date" id="orgDate" name="date"></div>
-            </div>
-            <div class="form-field">
-              <label for="orgDetails">What do you need?</label>
-              <textarea id="orgDetails" name="details" rows="3" placeholder="Guest count, vendor types, location, budget..."></textarea>
-            </div>
-            <button type="submit" class="submit-cta">Request vendor matches <span class="arrow">→</span></button>
-            <p class="form-success" role="status">Thanks — we've got your event details. Our team will follow up shortly.</p>
-          </form>
-        </div>
-
-        <div class="gs-block">
-          <p class="gs-block-label">I'm a vendor</p>
-          <form id="vendorForm" name="vendor-signup" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" novalidate>
-            <input type="hidden" name="form-name" value="vendor-signup">
-            <p style="display:none;"><label>Leave this field empty: <input name="bot-field"></label></p>
-            <div class="form-row">
-              <div class="form-field"><label for="venBusiness">Business name</label><input type="text" id="venBusiness" name="business" required></div>
-              <div class="form-field"><label for="venEmail">Email</label><input type="email" id="venEmail" name="email" required></div>
-            </div>
-            <div class="form-row">
-              <div class="form-field">
-                <label for="venCategory">Category</label>
-                <select id="venCategory" name="category">
-                  <option>Catering</option>
-                  <option>Food &amp; Beverages</option>
-                  <option>Photography</option>
-                  <option>Videography</option>
-                </select>
-              </div>
-              <div class="form-field"><label for="venCity">City / area served</label><input type="text" id="venCity" name="city"></div>
-            </div>
-            <div class="form-field">
-              <label for="venDetails">Tell us about your business</label>
-              <textarea id="venDetails" name="details" rows="3" placeholder="How long you've been operating, typical event size, portfolio link..."></textarea>
-            </div>
-            <button type="submit" class="submit-cta">Apply as a vendor <span class="arrow">→</span></button>
-            <p class="form-success" role="status">Thanks for applying — our team reviews every vendor and will be in touch soon.</p>
-          </form>
+          <a class="btn btn-primary" href="for-vendors.html">See the vendor plan <span class="arrow">→</span></a>
         </div>
       </div>
     </div>
@@ -616,7 +376,6 @@
 
 </main>
 
-<!-- ============ FOOTER ============ -->
 <footer class="site-footer">
   <span class="footer-ghost" aria-hidden="true">VENDKOM</span>
   <div class="shell footer-inner">
@@ -624,6 +383,8 @@
     <p>The logistics and marketing layer for startup event vendors.</p>
     <div class="footer-bottom">
       &copy; <span class="year"></span> Vendkom. All rights reserved.
+      &middot; <a href="for-organizers.html">Plan an event</a>
+      &middot; <a href="for-vendors.html">Become a vendor</a>
       &middot; <a href="legal/privacy.html">Privacy</a>
       &middot; <a href="legal/terms.html">Terms</a>
     </div>
