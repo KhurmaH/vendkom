@@ -142,14 +142,15 @@ if (window.gsap && window.ScrollTrigger) {
      ====================================================================== */
   const subjectStage = document.getElementById('subjectStage');
   const subject3d = document.getElementById('subject3d');
-  const subjectImg = document.getElementById('subjectImg');
+  const subjectSlides = document.getElementById('subjectSlides');
   const subjectGlow = document.getElementById('subjectGlow');
   const floaters = gsap.utils.toArray('.float-card, .float-chip');
 
   if (subject3d) {
     /* Pin the centring as GSAP percentage transforms so animating x/y later
        composes with it instead of overwriting the CSS translate. */
-    if (subjectImg) gsap.set(subjectImg, { xPercent: -50, yPercent: -50 });
+    /* The slides container fills the stage, so each image keeps its own CSS
+       centring and the drift below moves the whole set together. */
     if (subjectGlow) gsap.set(subjectGlow, { xPercent: 0, yPercent: 0 });
 
     /* Push each floater onto its own plane so rotation separates them */
@@ -160,20 +161,68 @@ if (window.gsap && window.ScrollTrigger) {
     if (!reduceMotion) {
       onHeroReveal(() => {
         const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-        if (subjectImg) {
-          tl.from(subjectImg, { opacity: 0, scale: 0.9, duration: 1.4, ease: 'power2.out' }, 0);
+        if (subjectSlides) {
+          tl.from(subjectSlides, { scale: 0.9, duration: 1.4, ease: 'power2.out' }, 0);
         }
         tl.from(floaters, { opacity: 0, y: 34, duration: 1, stagger: 0.12 }, 0.35);
         if (subjectGlow) tl.from(subjectGlow, { opacity: 0, duration: 1.8, ease: 'none' }, 0);
       });
     }
 
+    /* ---------- Slides cycle in random order ----------
+       Shuffles the remaining slides rather than picking at random each time,
+       so you never get the same image twice in a row and every image is seen
+       once before any repeats. Pauses when the hero is off-screen or the tab
+       is hidden, so it isn't crossfading to nobody. */
+    const slides = subjectSlides ? Array.from(subjectSlides.querySelectorAll('.subject-img')) : [];
+    if (slides.length > 1 && !reduceMotion) {
+      let queue = [];
+      let current = 0;
+      let timer = null;
+      let visible = true;
+
+      const refill = () => {
+        queue = slides.map((_, i) => i).filter(i => i !== current);
+        for (let i = queue.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [queue[i], queue[j]] = [queue[j], queue[i]];
+        }
+      };
+
+      const advance = () => {
+        if (!queue.length) refill();
+        const next = queue.pop();
+        slides[current].classList.remove('is-active');
+        slides[next].classList.add('is-active');
+        current = next;
+      };
+
+      const start = () => {
+        if (timer === null) timer = setInterval(() => {
+          if (visible && !document.hidden) advance();
+        }, 4600);
+      };
+      const stop = () => { if (timer !== null) { clearInterval(timer); timer = null; } };
+
+      refill();
+      start();
+
+      document.addEventListener('visibilitychange', () => {
+        document.hidden ? stop() : start();
+      });
+      if ('IntersectionObserver' in window && subjectStage) {
+        new IntersectionObserver(entries => {
+          entries.forEach(e => { visible = e.isIntersecting; });
+        }, { threshold: 0 }).observe(subjectStage);
+      }
+    }
+
     if (finePointer && !reduceMotion) {
       const rotY = gsap.quickTo(subject3d, 'rotationY', { duration: 0.9, ease: 'power2.out' });
       const rotX = gsap.quickTo(subject3d, 'rotationX', { duration: 0.9, ease: 'power2.out' });
 
-      const imgX = subjectImg ? gsap.quickTo(subjectImg, 'x', { duration: 1, ease: 'power2.out' }) : null;
-      const imgY = subjectImg ? gsap.quickTo(subjectImg, 'y', { duration: 1, ease: 'power2.out' }) : null;
+      const imgX = subjectSlides ? gsap.quickTo(subjectSlides, 'x', { duration: 1, ease: 'power2.out' }) : null;
+      const imgY = subjectSlides ? gsap.quickTo(subjectSlides, 'y', { duration: 1, ease: 'power2.out' }) : null;
 
       const glowX = subjectGlow ? gsap.quickTo(subjectGlow, 'x', { duration: 1.1, ease: 'power2.out' }) : null;
       const glowY = subjectGlow ? gsap.quickTo(subjectGlow, 'y', { duration: 1.1, ease: 'power2.out' }) : null;

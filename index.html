@@ -99,7 +99,14 @@
       <div class="subject-stage" id="subjectStage" aria-hidden="true">
         <div class="subject-glow" id="subjectGlow"></div>
         <div class="subject-3d" id="subject3d">
-          <img class="subject-img" id="subjectImg" src="assets/images/hero-booth-cutout.webp" alt="">
+          <!-- Slides crossfade in random order. The booth is a true cut-out;
+               the photos get a rounded-card treatment so both read as the
+               same kind of floating object. -->
+          <div class="subject-slides" id="subjectSlides">
+            <img class="subject-img is-active" src="assets/images/hero-booth-cutout.webp" alt="">
+            <img class="subject-img is-photo" src="assets/images/hero-plated-dish.jpg" alt="" loading="lazy">
+            <img class="subject-img is-photo" src="assets/images/hero-champagne.jpg" alt="" loading="lazy">
+          </div>
 
           <div class="float-card" data-depth="70">
             <div class="float-media">

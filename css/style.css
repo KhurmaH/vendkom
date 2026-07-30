@@ -282,6 +282,10 @@ h1, h2, h3, h4 {
   transform-style: preserve-3d;
   will-change: transform;
 }
+.subject-slides {
+  position: absolute; inset: 0;
+  will-change: transform;
+}
 .subject-img {
   position: absolute;
   left: 50%; top: 50%;
@@ -290,7 +294,18 @@ h1, h2, h3, h4 {
   transform: translate(-50%, -50%);
   filter: drop-shadow(0 42px 54px rgba(18, 41, 61, 0.26));
   user-select: none;
-  will-change: transform;
+  opacity: 0;
+  transition: opacity 1.1s var(--ease);
+}
+.subject-img.is-active { opacity: 1; }
+/* Opaque photos need a frame; the cut-out supplies its own silhouette */
+.subject-img.is-photo {
+  max-width: 540px;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: 0 42px 60px -24px rgba(18, 41, 61, 0.45);
+  filter: none;
 }
 
 .float-card {
